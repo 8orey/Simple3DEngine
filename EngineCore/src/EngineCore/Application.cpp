@@ -1,54 +1,55 @@
 
 #include <iostream>
 
-#include <GLFW/glfw3.h>
-
 #include "EngineCore/Application.hpp"
 #include "EngineCore/Logs.hpp"
+#include "EngineCore/Window.hpp"
 
 namespace EngineCore {
 
 	Application::Application() {
-        LOG_INFO("Create Application");
+        LOG_INFO("Open Application");
     };
 
-	Application::~Application() {};
+	Application::~Application() {
+		LOG_INFO("Close Application");
+	};
 
 	int Application::start(uint32_t WINDOW_WIDTH, uint32_t WINDOW_HEIGHT, const char* title) {
-        GLFWwindow* window;
+		m_pWindow = std::make_unique<Window>(title, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-        /* Initialize the library */
-        if (!glfwInit())
-            return -1;
 
-        /* Create a windowed mode window and its OpenGL context */
-        window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, title, NULL, NULL);
-        if (!window)
-        {
-            glfwTerminate();
-            return -1;
-        }
+		m_event_dispatcher.add_event_listener<EventMouseMoved>(
+			[](EventMouseMoved& event) {
+				// LOG_INFO("[MouseMoved] Mouse moved to {0}x{1}", event.x, event.y);
+			}
+		);
 
-        /* Make the window's context current */
-        glfwMakeContextCurrent(window);
+		m_event_dispatcher.add_event_listener<EventWindowResize>(
+			[](EventWindowResize& event) {
+				// LOG_INFO("[WindowResized] Change size to {0}x{1}", event.w, event.h);
+			}
+		);
 
-        /* Loop until the user closes the window */
-        while (!glfwWindowShouldClose(window))
-        {
-            /* Render here */
-            // glClear(GL_COLOR_BUFFER_BIT);
+		m_event_dispatcher.add_event_listener<EventWindowClose>(
+			[&](EventWindowClose& event) {
+				m_bCloseWindow = true;
+				LOG_INFO("[WindowClose] Goodbye!");
+			}
+		);
 
-            /* Swap front and back buffers */
-            glfwSwapBuffers(window);
+		m_pWindow->set_event_callback(
+			[&](BaseEvent& event) {
+				m_event_dispatcher.dispatch(event);
+			}
+		);
 
-            /* Poll for and process events */
-            glfwPollEvents();
-
-            on_update();
-        }
-
-        glfwTerminate();
-        return 0;
+		while (!m_bCloseWindow) {
+			m_pWindow->on_update();
+			on_update();
+		}
+		m_pWindow = nullptr;
+		return 0;
 	};
 
 } 

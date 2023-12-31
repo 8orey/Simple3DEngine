@@ -1,5 +1,9 @@
 #pragma once 
 
+#include "EngineCore/Event.hpp"
+
+#include <memory>
+
 namespace EngineCore {
 
 	class Application {
@@ -20,6 +24,13 @@ namespace EngineCore {
 		virtual int start(uint32_t WINDOW_WIDTH, uint32_t WINDOW_HEIGHT, const char* title);
 
 		virtual void on_update() {};
+
+	private:
+
+		std::unique_ptr<class Window> m_pWindow;
+
+		EventDispatcher m_event_dispatcher;
+		bool m_bCloseWindow = false;
 
 	};
 

@@ -1,6 +1,6 @@
 #include <iostream>
-#include <memory>
 #include <EngineCore/Application.hpp>
+#include <EngineCore/Logs.hpp>
 
 
 class MyApp : public EngineCore::Application {
@@ -14,8 +14,7 @@ class MyApp : public EngineCore::Application {
 };
 
 int main() {
-
     MyApp App;
-    auto exitCode = App.start(100, 100, "my first app");
+    auto exitCode = App.start(1024, 768, "my first app");
     return exitCode;
 }
