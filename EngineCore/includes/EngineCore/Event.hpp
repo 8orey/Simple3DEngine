@@ -6,7 +6,7 @@
 namespace EngineCore {
 
 	enum class EventType {
-		WindowResize = 0,
+		WindowResize,
 		WindowClose,
 
 		KeyPressed,

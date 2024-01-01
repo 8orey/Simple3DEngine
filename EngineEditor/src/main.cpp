@@ -15,6 +15,6 @@ class MyApp : public EngineCore::Application {
 
 int main() {
     MyApp App;
-    auto exitCode = App.start(1024, 768, "my first app");
+    auto exitCode = App.start(512, 512, "my first app");
     return exitCode;
 }
