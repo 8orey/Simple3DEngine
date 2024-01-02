@@ -13,6 +13,7 @@
 
 #include "EngineCore/Window.hpp"
 #include "EngineCore/Logs.hpp"
+#include "EngineCore/Camera.hpp"
 
 #include "Rendering/OpenGL/ShaderProgram.hpp"
 #include "Rendering/OpenGL/VertexBuffer.hpp"
@@ -24,14 +25,27 @@ namespace EngineCore {
     static bool s_GLFW_initialized = false;
 
     GLfloat positions_colors[]{
-        0.5,  0.5, 0,  0.f, 1.f, 0.f,
-       -0.5,  0.5, 0,  0.f, 0.f, 1.f,
-        0.5, -0.5, 0,  1.f, 0.f, 0.f,
-       -0.5, -0.5, 0,  0.f, 1.f, 0.f,
+        0.5,  0.5, 0.5,  1.f, 1.f, 0.f,
+       -0.5,  0.5, 0.5,  1.f, 1.f, 0.f,
+        0.5, -0.5, 0.5,  1.f, 1.f, 0.f,
+       -0.5, -0.5, 0.5,  1.f, 1.f, 0.f,
+        
+        0.5,  0.5,-0.5,  1.f, 0.f, 1.f,
+       -0.5,  0.5,-0.5,  1.f, 0.f, 1.f,
+        0.5, -0.5,-0.5,  1.f, 0.f, 1.f,
+       -0.5, -0.5,-0.5,  1.f, 0.f, 1.f,
+
+
     };
 
     GLuint indicies[] = {
-        0, 1, 3, 0, 2, 3,  
+        0, 1, 3, 0, 2, 3,
+        4, 7, 5, 4, 7, 6,
+
+        1, 4, 0, 1, 4, 5,
+        0, 6, 2, 0, 6, 4,
+        2, 7, 3, 2, 7, 6,
+        1, 7, 5, 1, 7, 3,
     };
 
     const char* vertex_shader =
@@ -39,10 +53,11 @@ namespace EngineCore {
         layout(location = 0) in vec3 vertex_position;
         layout(location = 1) in vec3 vertex_color;
         uniform mat4 module_matrix;
+        uniform mat4 view_projection_matrix;
         out vec3 color;
         void main() {
            color = vertex_color;
-           gl_Position = module_matrix * vec4(vertex_position, 1.0);
+           gl_Position = view_projection_matrix * module_matrix * vec4(vertex_position, 1.0);
         })";
 
     const char* fragment_shader =
@@ -59,8 +74,14 @@ namespace EngineCore {
     std::unique_ptr<VertexArray> p_vao;
 
     float scale[3] = { 1.f, 1.f, 1.f };
-    float rotate = 0.f;
+    float r_X = 0.f;
+    float r_Y = 0.f;
     float translate[3] = { 0.f, 0.f, 0.f };
+
+    float camera_position[3] = { 0.f, 0.f, 1.f };
+    float camera_rotation[3] = { 0.f, 0.f, 0.f };
+    bool perspective_camera = true;
+    Camera camera;
 
     Window::Window(std::string title, const uint32_t width, const uint32_t height)
         : m_data({ move(title), width, height })
@@ -183,8 +204,13 @@ namespace EngineCore {
         ImGui::Begin("Background Color Window");
         ImGui::ColorEdit4("Background Color", m_background_color);
         ImGui::SliderFloat3("Scale", scale, -2.f, 2.f);
-        ImGui::SliderFloat("Rotate Oxy", &rotate, 0, 360);
-        ImGui::SliderFloat3("Translate", translate, -1.f, +1.f);
+        ImGui::SliderFloat("Rotate Oxy", &r_X, -180, 180);
+        ImGui::SliderFloat("Rotate Oyz", &r_Y, -180, 180);
+        ImGui::SliderFloat3("Translate", translate, -10.f, +10.f);
+
+        ImGui::SliderFloat3("Camera position", camera_position, -10.f, +10.f);
+        ImGui::SliderFloat3("Camera rotation", camera_rotation, -180, 180);
+        ImGui::Checkbox("Perspective camera", &perspective_camera);
 
         p_shader_program->bind();
         glm::mat4 scale_matrix(
@@ -193,13 +219,22 @@ namespace EngineCore {
             0.f,      0.f, scale[2], 0.f,
             0.f,      0.f,      0.f, 1.f);
 
-        float rotate_rad = glm::radians(rotate);
-        glm::mat4 rotate_matrix(
-            cos(rotate_rad), sin(rotate_rad), 0, 0,
-            -sin(rotate_rad), cos(rotate_rad), 0, 0,
+        float r_X_rad = glm::radians(r_X);
+        glm::mat4 r_matrix_x(
+            cos(r_X_rad), sin(r_X_rad), 0, 0,
+            -sin(r_X_rad), cos(r_X_rad), 0, 0,
             0, 0, 1, 0,
             0, 0, 0, 1
         );
+
+        float r_Y_rad = glm::radians(r_Y);
+        glm::mat4 r_matrix_y (
+            cos(r_Y_rad), 0, -sin(r_Y_rad), 0,
+            0, 1, 0, 0,
+            sin(r_Y_rad), 0, cos(r_Y_rad), 0,
+            0, 0, 0, 1
+        );
+
         glm::mat4 translate_matrix(
             1.f, 0.f, 0.f, 0.f,
             0.f, 1.f, 0.f, 0.f,
@@ -207,9 +242,20 @@ namespace EngineCore {
             translate[0], translate[1], translate[2], 1
         );
 
-        glm::mat4 module_matrix = translate_matrix * rotate_matrix * scale_matrix;
+        glm::mat4 module_matrix = translate_matrix * r_matrix_y * r_matrix_x * scale_matrix;
+
+        camera.set_position_rotation(
+            glm::vec3(camera_position[0], camera_position[1], camera_position[2]),
+            glm::vec3(camera_rotation[0], camera_rotation[1], camera_rotation[2])
+        );
+
+        camera.set_ptojection_mode(
+            (perspective_camera ? Camera::ProjectionMode::Perspective : Camera::ProjectionMode::Orthographic)
+        );
 
         p_shader_program->set_mat4("module_matrix", module_matrix);
+        p_shader_program->set_mat4("view_projection_matrix", camera.get_projection_matrix() * camera.get_view_matrix());
+
         p_vao->bind();
         glDrawElements(GL_TRIANGLES, p_vao->get_indicies_count(), GL_UNSIGNED_INT, nullptr);
         

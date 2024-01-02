@@ -6,21 +6,39 @@ set(ENGINE_PUBLIC_INCLUDES
         includes/EngineCore/Application.hpp 
         includes/EngineCore/Logs.hpp 
         includes/EngineCore/Event.hpp 
+        includes/EngineCore/Camera.hpp 
 )
 
 set(ENGINE_PRIVATE_INCLUDES
-    includes/EngineCore/Window.hpp 
+    includes/EngineCore/Window.hpp
+    src/EngineCore/Rendering/OpenGL/ShaderProgram.hpp 
+    src/EngineCore/Rendering/OpenGL/VertexBuffer.hpp  
+    src/EngineCore/Rendering/OpenGL/VertexArray.hpp  
+    src/EngineCore/Rendering/OpenGL/IndexBuffer.hpp 
 )
 
 set(ENGINE_PRIVATE_SOURCES
     src/EngineCore/Application.cpp
     src/EngineCore/Window.cpp
+    src/EngineCore/Camera.cpp
+    src/EngineCore/Rendering/OpenGL/ShaderProgram.cpp
+    src/EngineCore/Rendering/OpenGL/VertexBuffer.cpp
+    src/EngineCore/Rendering/OpenGL/VertexArray.cpp 
+    src/EngineCore/Rendering/OpenGL/IndexBuffer.cpp 
 )
 
-add_library(${ENGINE_PROJECT_NAME} STATIC 
+set(ENGINE_ALL_SOURCES 
     ${ENGINE_PUBLIC_INCLUDES}
     ${ENGINE_PRIVATE_INCLUDES}
     ${ENGINE_PRIVATE_SOURCES}
+)
+
+add_library(${ENGINE_PROJECT_NAME} STATIC 
+    ${ENGINE_ALL_SOURCES}
+)
+
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES 
+    ${ENGINE_ALL_SOURCES} 
 )
 
 target_include_directories(${ENGINE_PROJECT_NAME} PUBLIC includes)
@@ -35,6 +53,9 @@ target_link_libraries(${ENGINE_PROJECT_NAME} PUBLIC spdlog)
 
 add_subdirectory(../external/glad ${CMAKE_CURRENT_BINARY_DIR}/glad)
 target_link_libraries(${ENGINE_PROJECT_NAME} PRIVATE glad)
+
+add_subdirectory(../external/glm ${CMAKE_CURRENT_BINARY_DIR}/glm)
+target_link_libraries(${ENGINE_PROJECT_NAME} PRIVATE glm)
 
 set(IMGUI_INCLUDES
     ../external/ImGui/imgui.h 

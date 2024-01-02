@@ -100,4 +100,6 @@ namespace EngineCore {
 		glUniformMatrix4fv(glGetUniformLocation(m_id, name), 1, GL_FALSE, glm::value_ptr(mat));
 	}
 
+
+
 }
