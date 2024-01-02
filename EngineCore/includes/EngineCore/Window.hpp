@@ -1,6 +1,7 @@
 #pragma once 
 
 #include "EngineCore/Event.hpp"
+#include "glm/vec2.hpp"
 
 #include <string>
 #include <functional>
@@ -38,6 +39,8 @@ namespace EngineCore {
 			m_data.eventCallbackFn = callback;
 		}
 
+		glm::vec2 get_current_cursor_pos() const;
+
 	private:
 		struct WindowData {
 			std::string title;
@@ -52,7 +55,6 @@ namespace EngineCore {
 
 		GLFWwindow* m_pWindow = nullptr;
 		WindowData m_data;
-		float m_background_color[4] = {0.33, 0.33, 0.33, 0};
 
 	};
 

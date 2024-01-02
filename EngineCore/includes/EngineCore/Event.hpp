@@ -3,6 +3,8 @@
 #include <array>
 #include <functional>
 
+#include "Keys.hpp"
+
 namespace EngineCore {
 
 	enum class EventType {
@@ -79,6 +81,57 @@ namespace EngineCore {
 		}
 
 		static const EventType type = EventType::WindowClose;
+	};
+
+	struct EventKeyPressed : public BaseEvent {
+
+		EventKeyPressed(const KeyCode key_code, const bool repeated) : key_code(key_code), repeated(repeated) {}
+
+		virtual EventType get_type() const override {
+			return type;
+		}
+
+		KeyCode key_code;
+		bool repeated;
+		static const EventType type = EventType::KeyPressed;
+	};
+
+	struct EventKeyReleased : public BaseEvent {
+
+		EventKeyReleased(const KeyCode key_code) : key_code(key_code) {}
+
+		virtual EventType get_type() const override {
+			return type;
+		}
+
+		KeyCode key_code;
+		static const EventType type = EventType::KeyReleased;
+	};
+
+	struct EventMouseButtonPressed : public BaseEvent {
+
+		EventMouseButtonPressed(const MouseKeyCode key_code, const double x, const double y) : key_code(key_code), x(x), y(y) {}
+
+		virtual EventType get_type() const override {
+			return type;
+		}
+
+		MouseKeyCode key_code;
+		double x, y;
+		static const EventType type = EventType::MouseButtonPressed;
+	};
+
+	struct EventMouseButtonReleased : public BaseEvent {
+
+		EventMouseButtonReleased(const MouseKeyCode key_code, const double x, const double y) : key_code(key_code), x(x), y(y) {}
+
+		virtual EventType get_type() const override {
+			return type;
+		}
+
+		MouseKeyCode key_code;
+		double x, y;
+		static const EventType type = EventType::MouseButtonReleased;
 	};
 
 }

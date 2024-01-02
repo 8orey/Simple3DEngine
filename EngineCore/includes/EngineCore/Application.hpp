@@ -1,6 +1,8 @@
 #pragma once 
 
+#include "glm/vec3.hpp"
 #include "EngineCore/Event.hpp"
+#include "EngineCore/Camera.hpp"
 
 #include <memory>
 
@@ -25,6 +27,15 @@ namespace EngineCore {
 
 		virtual void on_update() {};
 
+		virtual void on_main_UI_update() {};
+		
+		virtual void on_UI_update() {};
+
+		virtual void on_mouse_key_activity(const MouseKeyCode key_code, const double x, const double y, const bool pressed) {};
+
+		glm::vec2 get_current_mouse_position() const;
+
+		Camera camera;
 	private:
 
 		std::unique_ptr<class Window> m_pWindow;
