@@ -21,7 +21,7 @@ namespace EngineCore {
 		void set_position(const glm::vec3& position);
 		void set_rotation(const glm::vec3& rotation);
 		void set_position_rotation(const glm::vec3& position, const glm::vec3& rotation);
-		void set_ptojection_mode(const ProjectionMode projection_mode);
+		void set_projection_mode(const ProjectionMode projection_mode);
 
 		glm::mat4 get_view_matrix() { 
 			if (m_should_update_view_matrix) {

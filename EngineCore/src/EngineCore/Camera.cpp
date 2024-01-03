@@ -51,7 +51,7 @@ namespace EngineCore {
 	};
 	void Camera::update_projection_matrix() {
 		if (m_projection_mode == ProjectionMode::Perspective) {
-			float r = 0.1f, t = 0.1f, f = 10.f, n = 0.1f;
+			float r = 0.1f, t = 0.1f, f = 100.f, n = 0.1f;
 			m_projection_matrix = glm::mat4(
 				n / r, 0, 0, 0,
 				0, n / t, 0, 0,
@@ -88,7 +88,7 @@ namespace EngineCore {
 		update_view_matrix();
 	}
 
-	void Camera::set_ptojection_mode(const ProjectionMode projection_mode) {
+	void Camera::set_projection_mode(const ProjectionMode projection_mode) {
 		m_projection_mode = projection_mode;
 		update_projection_matrix();
 	}

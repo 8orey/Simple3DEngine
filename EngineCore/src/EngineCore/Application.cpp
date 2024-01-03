@@ -20,22 +20,24 @@
 
 #include "Modules/UIModule.hpp"
 
+
+
 namespace EngineCore {
 
     // ------ TO DELETE ------ //
-    GLfloat positions_colors[]{
-         1, 1, 1,   1.f, 1.f, 0.f,
-        -1, 1, 1,   1.f, 1.f, 0.f,
-         1,-1, 1,   1.f, 1.f, 0.f,
-        -1,-1, 1,   1.f, 1.f, 0.f,
+    GLfloat skybox_vertexes[]{
+         1.f, 1.f, 1.f,   1.f, 1.f, 0.f,
+        -1.f, 1.f, 1.f,   1.f, 1.f, 0.f,
+         1.f,-1.f, 1.f,   1.f, 1.f, 0.f,
+        -1.f,-1.f, 1.f,   1.f, 1.f, 0.f,
 
-         1, 1,-1,   0.f, 1.f, 1.f,
-        -1, 1,-1,   0.f, 1.f, 1.f,
-         1,-1,-1,   0.f, 1.f, 1.f,
-        -1,-1,-1,   0.f, 1.f, 1.f,
+         1.f, 1.f,-1.f,   0.f, 1.f, 1.f,
+        -1.f, 1.f,-1.f,   0.f, 1.f, 1.f,
+         1.f,-1.f,-1.f,   0.f, 1.f, 1.f,
+        -1.f,-1.f,-1.f,   0.f, 1.f, 1.f,
     };
 
-    GLuint indicies[] = {
+    GLuint skybox_triangles[] = {
         0, 1, 3, 0, 2, 3,
         4, 7, 5, 4, 7, 6,
 
@@ -74,9 +76,7 @@ namespace EngineCore {
     float r_X = 0.f;
     float r_Y = 0.f;
     float translate[3] = { 0.f, 0.f, 0.f };
-    float m_background_color[4] = { 0.33, 0.33, 0.33, 0 };
-    float r_X_speed = 1;
-    float r_Y_speed = 1;
+    float m_background_color[4] = { 0.345f, 0.510f, 0.510f, 0.f };
     bool r_by_Oxy = false;
     bool r_by_Oyz = false;
 
@@ -156,8 +156,8 @@ namespace EngineCore {
             ShaderDataType::Float3
         };
 
-        p_positions_colors_vbo = std::make_unique<VertexBuffer>(positions_colors, sizeof(positions_colors), buf_lay_2v3);
-        p_index_buffer = std::make_unique<IndexBuffer>(indicies, sizeof(indicies) / sizeof(GLuint));
+        p_positions_colors_vbo = std::make_unique<VertexBuffer>(skybox_vertexes, sizeof(skybox_vertexes), buf_lay_2v3);
+        p_index_buffer = std::make_unique<IndexBuffer>(skybox_triangles, sizeof(skybox_triangles) / sizeof(GLuint));
         p_vao = std::make_unique<VertexArray>();
 
         p_vao->add_vertex_buffer(*p_positions_colors_vbo);
@@ -172,8 +172,8 @@ namespace EngineCore {
             Renderer_OpenGL::set_clear_color(m_background_color);
             Renderer_OpenGL::clear();
 
-            r_X += r_X_speed * r_by_Oxy;
-            r_Y += r_Y_speed * r_by_Oyz;
+            r_X += r_by_Oxy;
+            r_Y += r_by_Oyz;
             if (r_X > 360)
                 r_X -= 360;
             if (r_Y > 360)
