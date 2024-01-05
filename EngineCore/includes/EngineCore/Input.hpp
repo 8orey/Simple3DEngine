@@ -3,6 +3,8 @@
 #include "Keys.hpp"
 
 namespace EngineCore {
+    using size_t = unsigned long long;
+
 	class Input {
 	public:
 		static bool is_key_pressed(const KeyCode keey_code);

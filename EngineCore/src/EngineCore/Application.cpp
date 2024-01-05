@@ -1,4 +1,6 @@
 
+#include <glad/glad.h>
+
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/trigonometric.hpp>
@@ -21,50 +23,53 @@
 #include "Modules/UIModule.hpp"
 
 
-
 namespace EngineCore {
 
     // ------ TO DELETE ------ //
     GLfloat skybox_vertexes[]{
-         1.f, 1.f, 1.f,   1.f, 1.f, 0.f,
-        -1.f, 1.f, 1.f,   1.f, 1.f, 0.f,
-         1.f,-1.f, 1.f,   1.f, 1.f, 0.f,
-        -1.f,-1.f, 1.f,   1.f, 1.f, 0.f,
-
-         1.f, 1.f,-1.f,   0.f, 1.f, 1.f,
-        -1.f, 1.f,-1.f,   0.f, 1.f, 1.f,
-         1.f,-1.f,-1.f,   0.f, 1.f, 1.f,
-        -1.f,-1.f,-1.f,   0.f, 1.f, 1.f,
+        1.f,  1.f,  1.f,    1.f, 1.f, 0.f,  -100.f, 100.f,
+        1.f,  1.f, -1.f,    1.f, 1.f, 0.f,  -100.f,-100.f,
+        1.f, -1.f,  1.f,    1.f, 1.f, 0.f,   100.f, 100.f,
+        1.f, -1.f, -1.f,    1.f, 1.f, 0.f,   100.f,-100.f,
     };
 
     GLuint skybox_triangles[] = {
         0, 1, 3, 0, 2, 3,
-        4, 7, 5, 4, 7, 6,
-
-        1, 4, 0, 1, 4, 5,
-        0, 6, 2, 0, 6, 4,
-        2, 7, 3, 2, 7, 6,
-        1, 7, 5, 1, 7, 3,
     };
 
     const char* vertex_shader =
-        R"(#version 440
+        R"(#version 460
         layout(location = 0) in vec3 vertex_position;
         layout(location = 1) in vec3 vertex_color;
+        layout(location = 2) in vec2 texture_coord;
+        
         uniform mat4 module_matrix;
         uniform mat4 view_projection_matrix;
-        out vec3 color;
+        uniform float texture_frame; 
+
+        out vec3 color;        
+        out vec2 tex_pos;
+
         void main() {
+           tex_pos = texture_coord + vec2(texture_frame / 500.f, texture_frame / 500.f);
            color = vertex_color;
            gl_Position = view_projection_matrix * module_matrix * vec4(vertex_position, 1.0);
         })";
 
     const char* fragment_shader =
-        R"(#version 440
+        R"(#version 460
+
         in vec3 color;
+        in vec2 tex_pos;
+    
+        layout(binding = 0) uniform sampler2D ourTexture;        
+               
         out vec4 frag_color;
+
         void main() {
-           frag_color = vec4(color, 1.0);
+                    
+            frag_color = texture(ourTexture, tex_pos);
+
         })";
 
     std::unique_ptr<ShaderProgram> p_shader_program;
@@ -94,66 +99,99 @@ namespace EngineCore {
 	int Application::start(uint32_t WINDOW_WIDTH, uint32_t WINDOW_HEIGHT, const char* title) {
 		m_pWindow = std::make_unique<Window>(title, WINDOW_WIDTH, WINDOW_HEIGHT);
 
+        {
 
-		m_event_dispatcher.add_event_listener<EventMouseMoved>(
-			[](EventMouseMoved& event) {}
-		);
+            m_event_dispatcher.add_event_listener<EventMouseMoved>(
+                [](EventMouseMoved& event) {}
+            );
 
-		m_event_dispatcher.add_event_listener<EventWindowResize>(
-			[](EventWindowResize& event) {}
-		);
+            m_event_dispatcher.add_event_listener<EventWindowResize>(
+                [](EventWindowResize& event) {}
+            );
 
-		m_event_dispatcher.add_event_listener<EventWindowClose>(
-			[&](EventWindowClose& event) {
-				m_bCloseWindow = true;
-				LOG_INFO("[WindowClose] Goodbye!");
-			}
-		);
+            m_event_dispatcher.add_event_listener<EventWindowClose>(
+                [&](EventWindowClose& event) {
+                    m_bCloseWindow = true;
+                    LOG_INFO("[WindowClose] Goodbye!");
+                }
+            );
 
-        m_event_dispatcher.add_event_listener<EventKeyPressed>(
-            [](EventKeyPressed& event) {
-                Input::PressKey(static_cast<KeyCode>(event.key_code));
-            }
-        );
+            m_event_dispatcher.add_event_listener<EventKeyPressed>(
+                [](EventKeyPressed& event) {
+                    Input::PressKey(static_cast<KeyCode>(event.key_code));
+                }
+            );
 
-        m_event_dispatcher.add_event_listener<EventKeyReleased>(
-            [](EventKeyReleased& event) {
-                Input::ReleaseKey(static_cast<KeyCode>(event.key_code));
-            }
-        );
+            m_event_dispatcher.add_event_listener<EventKeyReleased>(
+                [](EventKeyReleased& event) {
+                    Input::ReleaseKey(static_cast<KeyCode>(event.key_code));
+                }
+            );
 
-        m_event_dispatcher.add_event_listener<EventMouseButtonPressed> (
-            [&](EventMouseButtonPressed& event) {
-                Input::PressMouseKey(static_cast<MouseKeyCode>(event.key_code));
-                auto p = get_current_mouse_position();
-                on_mouse_key_activity(static_cast<MouseKeyCode>(event.key_code), p.x, p.y, true);
-            }
-        );
+            m_event_dispatcher.add_event_listener<EventMouseButtonPressed>(
+                [&](EventMouseButtonPressed& event) {
+                    Input::PressMouseKey(static_cast<MouseKeyCode>(event.key_code));
+                    auto p = get_current_mouse_position();
+                    on_mouse_key_activity(static_cast<MouseKeyCode>(event.key_code), p.x, p.y, true);
+                }
+            );
 
-        m_event_dispatcher.add_event_listener<EventMouseButtonReleased>(
-            [&](EventMouseButtonReleased& event) {
-                Input::ReleaseMouseKey(static_cast<MouseKeyCode>(event.key_code));
-                auto p = get_current_mouse_position();
-                on_mouse_key_activity(static_cast<MouseKeyCode>(event.key_code), p.x, p.y, false);
-            }
-        );
+            m_event_dispatcher.add_event_listener<EventMouseButtonReleased>(
+                [&](EventMouseButtonReleased& event) {
+                    Input::ReleaseMouseKey(static_cast<MouseKeyCode>(event.key_code));
+                    auto p = get_current_mouse_position();
+                    on_mouse_key_activity(static_cast<MouseKeyCode>(event.key_code), p.x, p.y, false);
+                }
+            );
 
-		m_pWindow->set_event_callback(
-			[&](BaseEvent& event) {
-				m_event_dispatcher.dispatch(event);
-			}
-		);
+            m_pWindow->set_event_callback(
+                [&](BaseEvent& event) {
+                    m_event_dispatcher.dispatch(event);
+                }
+            );
+        }
 
         // ------ TO DELETE ------ //
 
+        
+
+        const uint32_t width_t = 1000, height_t = 1000, channels = 3, r = 25;
+
+        auto* data = new unsigned char[width_t * height_t * channels] {};
+
+        for (size_t i = 0; i < height_t * width_t * channels; ++i) {
+            if ((i / channels % width_t <= width_t / 2) and (i / channels / width_t <= height_t / 2)) {
+                data[i] = 255;
+            }
+            if ((i / channels % width_t >= width_t / 2) and (i / channels / width_t >= height_t / 2)) {
+                data[i] = 255;
+            }
+        }
+
+        GLuint textureHandle;
+        glCreateTextures(GL_TEXTURE_2D, 1, &textureHandle);
+        glTextureStorage2D(textureHandle, 1, GL_RGB8, width_t, height_t);
+        glTextureSubImage2D(textureHandle, 0, 0, 0, width_t, height_t, GL_RGB, GL_UNSIGNED_BYTE, data);
+        
+        glTextureParameteri(textureHandle, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTextureParameteri(textureHandle, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTextureParameteri(textureHandle, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTextureParameteri(textureHandle, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        
+        glBindTextureUnit(0, textureHandle);
+        
+        
+        delete[] data;
+
         p_shader_program = std::make_unique<ShaderProgram>(vertex_shader, fragment_shader);
-        if (!p_shader_program->isCompiled()) {
+        if (!p_shader_program->is_compiled()) {
             return false;
         }
 
         BufferLayout buf_lay_2v3{
             ShaderDataType::Float3,
-            ShaderDataType::Float3
+            ShaderDataType::Float3,
+            ShaderDataType::Float2,
         };
 
         p_positions_colors_vbo = std::make_unique<VertexBuffer>(skybox_vertexes, sizeof(skybox_vertexes), buf_lay_2v3);
@@ -213,6 +251,10 @@ namespace EngineCore {
 
             p_shader_program->set_mat4("module_matrix", module_matrix);
             p_shader_program->set_mat4("view_projection_matrix", camera.get_projection_matrix() * camera.get_view_matrix());
+            static float frame = 0;
+            static bool speed = false;
+            p_shader_program->set_float("texture_frame", frame);
+            frame += static_cast<float>(speed);
 
             Renderer_OpenGL::draw(*p_vao);
 
@@ -229,6 +271,7 @@ namespace EngineCore {
             ImGui::SliderFloat3("Translate", translate, -10.f, +10.f);
             ImGui::Checkbox("Rotate by Oxy", &r_by_Oxy);
             ImGui::Checkbox("Rotate by Oyz", &r_by_Oyz);
+            ImGui::Checkbox("Speed of animation", &speed);
 
             on_main_UI_update();
 
@@ -239,11 +282,10 @@ namespace EngineCore {
             UIModule::UI_draw_end();
 
             // ------ TO DELETE ------ //
-
-
 			m_pWindow->on_update();
 			on_update();
 		}
+        glDeleteTextures(1, &textureHandle);
 		m_pWindow = nullptr;
 		return 0;
 	};

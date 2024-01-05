@@ -2,6 +2,8 @@
 #include "EngineCore/Input.hpp" 
 
 namespace EngineCore {
+    using size_t = unsigned long long;
+
 	bool Input::m_keys_pressed[static_cast<size_t>(KeyCode::KEY_LAST) + 1] = {};
 
 	bool Input::is_key_pressed(const KeyCode key_code) {

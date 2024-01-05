@@ -18,8 +18,11 @@ namespace EngineCore {
 
 		void bind() const;
 		static void unbind();
-		bool isCompiled() const { return m_isCompiled; };
+		bool is_compiled() const { return m_isCompiled; };
 		void set_mat4(const char* name, const glm::mat4& mat) const;
+		void set_int(const char* name, const int num) const;
+		void set_float(const char* name, const float num) const;
+
 	private:
 		bool m_isCompiled;
 		uint32_t m_id = 0;

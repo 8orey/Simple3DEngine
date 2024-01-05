@@ -15,8 +15,8 @@ class Editor : public EngineCore::Application {
     double m_y_mouse_pos_l = 0.0f;
     bool m_perspective_camera = true;
 
-    virtual void on_update() override {
-        {
+    void on_update() override {
+        
             glm::vec3 move_delta{ 0, 0, 0 };
             glm::vec3 rot_delta{ 0, 0, 0 };
 
@@ -82,7 +82,7 @@ class Editor : public EngineCore::Application {
             camera.set_projection_mode(
                 (m_perspective_camera ? EngineCore::Camera::ProjectionMode::Perspective : EngineCore::Camera::ProjectionMode::Orthographic)
             );
-        }
+        
     }
 
     void on_mouse_key_activity(const EngineCore::MouseKeyCode key_code, const double x, const double y, const bool pressed) override {
@@ -90,7 +90,7 @@ class Editor : public EngineCore::Application {
         m_y_mouse_pos_l = y;
     }
 
-    virtual void on_main_UI_update() override {
+    void on_main_UI_update() override {
         ImGui::Checkbox("Perspective Camera", &m_perspective_camera);
     }
 

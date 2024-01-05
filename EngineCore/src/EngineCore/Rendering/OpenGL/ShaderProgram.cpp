@@ -100,6 +100,12 @@ namespace EngineCore {
 		glUniformMatrix4fv(glGetUniformLocation(m_id, name), 1, GL_FALSE, glm::value_ptr(mat));
 	}
 
+	void ShaderProgram::set_int(const char* name, const int num) const {
+		glUniform1i(glGetUniformLocation(m_id, name), num);
+	};
 
+	void ShaderProgram::set_float(const char* name, const float num) const {
+		glUniform1f(glGetUniformLocation(m_id, name), num);
+	};
 
 }

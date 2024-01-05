@@ -72,56 +72,61 @@ namespace EngineCore {
 
 
 	void Camera::set_position(const glm::vec3& position) {
-		m_should_update_view_matrix |= (position != m_position);
-		m_position = position;
+		if (position != m_position) {
+			m_should_update_view_matrix = true;
+			m_position = position;
+		}
 	}
 	
 	void Camera::set_rotation(const glm::vec3& rotation) {
-		m_should_update_view_matrix |= (rotation != m_rotation);
-		m_rotation = rotation;
-	}
-
-	void Camera::set_position_rotation(const glm::vec3& position, const glm::vec3& rotation) {
-		m_should_update_view_matrix |= ((rotation != m_rotation) || (position != m_position));
-		m_position = position;
-		m_rotation = rotation;
-		update_view_matrix();
+		if (rotation != m_rotation) {
+			m_should_update_view_matrix = true;
+			m_rotation = rotation;
+		}
 	}
 
 	void Camera::set_projection_mode(const ProjectionMode projection_mode) {
-		m_projection_mode = projection_mode;
-		update_projection_matrix();
+		if (m_projection_mode != projection_mode) {
+			m_projection_mode = projection_mode;
+			update_projection_matrix();
+		}
 	}
 
 
 	void Camera::move_forward(const float delta) {	
-		m_should_update_view_matrix |= (delta != 0.0f);
-		m_position += delta * m_direction;
+		if (delta != 0.0f) {
+			m_should_update_view_matrix = true;
+			m_position += delta * m_direction;
+		}
 	};
 
 	void Camera::move_right(const float delta) {
-		m_should_update_view_matrix |= (delta != 0.0f);
-		m_position += delta * m_right;
+		if (delta != 0.0f) {
+			m_should_update_view_matrix = true;
+			m_position += delta * m_right;
+		}
 	};
 	void Camera::move_world_up(const float delta) {
-		m_should_update_view_matrix |= (delta != 0.0f);
-		m_position += delta * s_world_up;
+		if (delta != 0.0f) {
+			m_should_update_view_matrix = true;
+			m_position += delta * s_world_up;
+		}
 	};
 
 	void Camera::add_movement_and_rotation(const glm::vec3& move_delta, const glm::vec3& rot_delta) {
 		
-		m_should_update_view_matrix |= 
-			(move_delta.x != 0) || 
-			(move_delta.y != 0) || 
-			(move_delta.z != 0) || 
-			(rot_delta.x != 0)  ||
-			(rot_delta.y != 0)  ||
-			(rot_delta.z != 0);
-
-		m_position += m_direction * move_delta.x;
-		m_position += m_right * move_delta.y;
-		m_position += m_up * move_delta.z;
-		m_rotation += rot_delta;
+		if ((move_delta.x != 0.0f) ||
+			(move_delta.y != 0.0f) ||
+			(move_delta.z != 0.0f) ||
+			(rot_delta.x != 0.0f) ||
+			(rot_delta.y != 0.0f) ||
+			(rot_delta.z != 0.0f)) {
+			m_should_update_view_matrix = true;
+			m_position += m_direction * move_delta.x;
+			m_position += m_right * move_delta.y;
+			m_position += m_up * move_delta.z;
+			m_rotation += rot_delta;
+		}
 	}
 
 }

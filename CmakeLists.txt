@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
-
+project(3DEngine)
 set(PROJECT_NAME 3DEngine)
 
 add_subdirectory(EngineCore)
