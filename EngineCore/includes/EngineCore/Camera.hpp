@@ -20,21 +20,30 @@ namespace EngineCore {
 
 		void set_position(const glm::vec3& position);
 		void set_rotation(const glm::vec3& rotation);
-		void set_position_rotation(const glm::vec3& position, const glm::vec3& rotation);
 		void set_projection_mode(const ProjectionMode projection_mode);
 
-		glm::mat4 get_view_matrix() { 
-			if (m_should_update_view_matrix) {
-				update_view_matrix();
-				m_should_update_view_matrix = false;
-			}
-			return m_view_matrix; 
-		}
-		glm::mat4 get_projection_matrix() const { return m_projection_matrix; }
+		void set_near_plane(const float near);
+		void set_viewport_size(const float width, const float height);
+		void set_field_of_view(const float fov);
+		void set_far_plane(const float far);
+
+		glm::vec3 get_position(const glm::vec3& position) const;
+		glm::vec3 get_rotation(const glm::vec3& rotation) const;
+		ProjectionMode get_projection_mode() const;
+
+		float get_far_plane() const;
+		float get_near_plane() const;
+		float get_viewport_height() const;
+		float get_viewport_width() const;
+		float get_field_of_view() const;
+
+		glm::mat4 get_view_matrix();
+		glm::mat4 get_projection_matrix();
 
 		void move_forward(const float delta);
 		void move_right(const float delta);
 		void move_world_up(const float delta);
+
 		void add_movement_and_rotation(const glm::vec3& move_delta, const glm::vec3& rot_delta);
 
 	private:
@@ -53,11 +62,18 @@ namespace EngineCore {
 		glm::vec3 m_direction = s_world_forward;
 		glm::vec3 m_right = s_world_right;
 		glm::vec3 m_up = s_world_up;
-		
+
+		float m_far_clip_plane{ 1000.f };
+		float m_near_clip_plane{ 0.1f };
+		float m_viewport_width{ 800.f };
+		float m_viewport_height{ 600.f };
+		float m_field_of_view{ 70.f };
+
 		glm::mat4 m_view_matrix;
 		glm::mat4 m_projection_matrix;
 
 		bool m_should_update_view_matrix = false;
+		bool m_should_update_projecting_matrix = false;
 	};
 
 }

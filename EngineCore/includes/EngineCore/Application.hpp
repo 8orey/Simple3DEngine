@@ -23,17 +23,18 @@ namespace EngineCore {
 
 		Application& operator=(Application&&) = delete;
 
+
 		virtual int start(uint32_t WINDOW_WIDTH, uint32_t WINDOW_HEIGHT, const char* title);
 
 		virtual void on_update() {};
-
-		virtual void on_main_UI_update() {};
 		
 		virtual void on_UI_update() {};
 
 		virtual void on_mouse_key_activity(const MouseKeyCode key_code, const double x, const double y, const bool pressed) {};
 
 		glm::vec2 get_current_mouse_position() const;
+
+		void close();
 
 		Camera camera;
 	private:

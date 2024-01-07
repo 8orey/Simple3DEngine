@@ -19,6 +19,7 @@ set(ENGINE_PRIVATE_INCLUDES
     src/EngineCore/Rendering/OpenGL/VertexArray.hpp  
     src/EngineCore/Rendering/OpenGL/IndexBuffer.hpp 
     src/EngineCore/Rendering/OpenGL/Renderer_OpenGL.hpp 
+    src/EngineCore/Rendering/OpenGL/Texture2D.hpp 
 
     src/EngineCore/Modules/UIModule.hpp
 )
@@ -34,6 +35,7 @@ set(ENGINE_PRIVATE_SOURCES
     src/EngineCore/Rendering/OpenGL/VertexArray.cpp 
     src/EngineCore/Rendering/OpenGL/IndexBuffer.cpp 
     src/EngineCore/Rendering/OpenGL/Renderer_OpenGL.cpp 
+    src/EngineCore/Rendering/OpenGL/Texture2D.cpp 
 
     src/EngineCore/Modules/UIModule.cpp
 )

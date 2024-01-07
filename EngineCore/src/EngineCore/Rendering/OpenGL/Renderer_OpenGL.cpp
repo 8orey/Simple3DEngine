@@ -36,6 +36,7 @@ namespace EngineCore {
 
 	void Renderer_OpenGL::clear() {
 		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_DEPTH_BUFFER_BIT);
 	}
 
 	void Renderer_OpenGL::set_viewport(const uint32_t width, const uint32_t height, const uint32_t left_offset, const uint32_t bottom_offset) {
@@ -53,4 +54,13 @@ namespace EngineCore {
 	const char* Renderer_OpenGL::get_version_str() {
 		return reinterpret_cast<const char*>(glGetString(GL_VERSION));
 	}
+
+	void Renderer_OpenGL::enable_depth_testing() {
+		glEnable(GL_DEPTH_TEST);
+	}
+
+	void Renderer_OpenGL::disable_depth_testing() {
+		glDisable(GL_DEPTH_TEST);
+	};
+
 }

@@ -10,7 +10,6 @@ namespace EngineCore {
 		static void on_window_close();
 		static void UI_draw_begin();
 		static void UI_draw_end();
-		static void ShowExampleAppDockSpace(bool* p_open);
 
 	};
 
