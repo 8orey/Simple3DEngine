@@ -100,12 +100,20 @@ namespace EngineCore {
 		glUniformMatrix4fv(glGetUniformLocation(m_id, name), 1, GL_FALSE, glm::value_ptr(mat));
 	}
 
+	void ShaderProgram::set_mat3(const char* name, const glm::mat3& mat) const {
+		glUniformMatrix3fv(glGetUniformLocation(m_id, name), 1, GL_FALSE, glm::value_ptr(mat));
+	}
+
 	void ShaderProgram::set_int(const char* name, const int num) const {
 		glUniform1i(glGetUniformLocation(m_id, name), num);
 	};
 
 	void ShaderProgram::set_float(const char* name, const float num) const {
 		glUniform1f(glGetUniformLocation(m_id, name), num);
+	};
+
+	void ShaderProgram::set_vec3(const char* name, const float x, const float y, const float z) const {
+		glUniform3f(glGetUniformLocation(m_id, name), x, y, z);
 	};
 
 }

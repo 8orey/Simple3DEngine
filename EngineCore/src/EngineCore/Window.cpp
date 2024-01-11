@@ -32,6 +32,8 @@ namespace EngineCore {
             return -1;
         }
 
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+
         m_pWindow = glfwCreateWindow(m_data.width, m_data.height, m_data.title.c_str(), nullptr, nullptr);
 
         if (!m_pWindow)
@@ -41,10 +43,21 @@ namespace EngineCore {
             return -2;
         }
 
-        if (!Renderer_OpenGL::init(m_pWindow)) {
+#ifdef NDEBUG 
+
+        if (!Renderer_OpenGL::init(m_pWindow, false)) {
             LOG_CRITICAL("Failed to initialize Renderer_OpenGL!");
             return -3;
         };
+
+#else 
+
+        if (!Renderer_OpenGL::init(m_pWindow, true)) {
+            LOG_CRITICAL("Failed to initialize Renderer_OpenGL!");
+            return -3;
+        };
+
+#endif 
 
         glfwSetWindowUserPointer(m_pWindow, &m_data);
 

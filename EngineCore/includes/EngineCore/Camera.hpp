@@ -1,6 +1,7 @@
 #pragma once 
 
 #include <glm/vec3.hpp>
+#include <glm/trigonometric.hpp>
 #include <glm/ext/matrix_float4x4.hpp>
 
 
@@ -27,8 +28,8 @@ namespace EngineCore {
 		void set_field_of_view(const float fov);
 		void set_far_plane(const float far);
 
-		glm::vec3 get_position(const glm::vec3& position) const;
-		glm::vec3 get_rotation(const glm::vec3& rotation) const;
+		glm::vec3 get_position() const;
+		glm::vec3 get_rotation() const;
 		ProjectionMode get_projection_mode() const;
 
 		float get_far_plane() const;
@@ -37,8 +38,8 @@ namespace EngineCore {
 		float get_viewport_width() const;
 		float get_field_of_view() const;
 
-		glm::mat4 get_view_matrix();
-		glm::mat4 get_projection_matrix();
+		const glm::mat4& get_view_matrix();
+		const glm::mat4& get_projection_matrix() const;
 
 		void move_forward(const float delta);
 		void move_right(const float delta);
@@ -63,17 +64,16 @@ namespace EngineCore {
 		glm::vec3 m_right = s_world_right;
 		glm::vec3 m_up = s_world_up;
 
-		float m_far_clip_plane{ 1000.f };
+		float m_far_clip_plane{ 100.f };
 		float m_near_clip_plane{ 0.1f };
 		float m_viewport_width{ 800.f };
 		float m_viewport_height{ 600.f };
-		float m_field_of_view{ 70.f };
+		float m_field_of_view{ glm::radians(80.f) };
 
 		glm::mat4 m_view_matrix;
 		glm::mat4 m_projection_matrix;
 
 		bool m_should_update_view_matrix = false;
-		bool m_should_update_projecting_matrix = false;
 	};
 
 }

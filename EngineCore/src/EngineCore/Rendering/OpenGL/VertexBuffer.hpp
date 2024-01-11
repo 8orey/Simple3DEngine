@@ -66,8 +66,7 @@ namespace EngineCore {
 		VertexBuffer& operator=(VertexBuffer&& vertexBuffer) noexcept;
 		VertexBuffer(VertexBuffer&& vertexBuffer) noexcept;
 
-		void bind() const;
-		static void unbind();
+		uint32_t get_handle() const;
 
 		const BufferLayout& get_layout() const { return m_buffer_layout; }
 

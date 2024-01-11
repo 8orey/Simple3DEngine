@@ -39,18 +39,28 @@ namespace EngineCore {
 	}
 
 	void VertexArray::add_vertex_buffer(const VertexBuffer& vertex_buffer) {
-		bind(); vertex_buffer.bind();
+		bind();
 		
 		for (const auto& cur : vertex_buffer.get_layout().get_elements()) {
 			glad_glEnableVertexAttribArray(m_elements_count);
-			glVertexAttribPointer(
+
+			glBindVertexBuffer(
+				m_elements_count,
+				vertex_buffer.get_handle(),
+				cur.offset,
+				static_cast<GLsizei>(vertex_buffer.get_layout().get_stride())
+			);
+
+			glVertexAttribFormat(
 				m_elements_count,
 				static_cast<GLint>(cur.components_cnt),
 				cur.component_type,
-				GL_FALSE,
-				static_cast<GLsizei>(vertex_buffer.get_layout().get_stride()),
-				reinterpret_cast<const void*>(cur.offset)
+				GL_FALSE, 
+				0
 			);
+
+			glVertexAttribBinding(m_elements_count, m_elements_count);
+
 			++m_elements_count;
 		}
 	}

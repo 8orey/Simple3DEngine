@@ -6,21 +6,34 @@
 
 #include "IMGUI/imgui.h"
 #include <imgui_internal.h>
+#include <glm/trigonometric.hpp>
 
 float MOVE_SPEED = 0.025f;
 float ROTATE_SPEED = 0.5f;
 
 class Editor : public EngineCore::Application {
 
-    double m_x_mouse_pos_l = 0.0f;
-    double m_y_mouse_pos_l = 0.0f;
+    float m_x_mouse_pos_l = 0.0f;
+    float m_y_mouse_pos_l = 0.0f;
     bool m_perspective_camera = true;
 
-    float camera_far = camera.get_far_plane();
-    float camera_near = camera.get_near_plane();
-    float camera_fov = camera.get_field_of_view();
-    float camera_viewport_w = camera.get_viewport_width();
-    float camera_viewport_h = camera.get_viewport_height();
+    float camera_far{};
+    float camera_near{};
+    float camera_fov{};
+    float camera_viewport_w{};
+    float camera_viewport_h{};
+
+    void init() override {
+        camera.set_far_plane(100.f);
+        camera.set_near_plane(0.1f);
+        camera.set_field_of_view(glm::radians(80.f));
+    
+        camera_far = camera.get_far_plane();
+        camera_near = camera.get_near_plane();
+        camera_fov = camera.get_field_of_view();
+        camera_viewport_w = camera.get_viewport_width();
+        camera_viewport_h = camera.get_viewport_height();
+    }
 
     void camera_pos_update() {
         glm::vec3 move_delta{ 0, 0, 0 };
@@ -67,14 +80,14 @@ class Editor : public EngineCore::Application {
         if (EngineCore::Input::is_mouse_key_pressed(EngineCore::MouseKeyCode::MOUSE_BUTTON_RIGHT)) {
             glm::vec2 cursor_pos = get_current_mouse_position();
             if (EngineCore::Input::is_mouse_key_pressed(EngineCore::MouseKeyCode::MOUSE_BUTTON_LEFT)) {
-                camera.move_right((m_x_mouse_pos_l - cursor_pos.x) / 100.0);
-                camera.move_world_up((m_y_mouse_pos_l - cursor_pos.y) / 100.0);
+                camera.move_right((m_x_mouse_pos_l - cursor_pos.x) / 100.0f);
+                camera.move_world_up((m_y_mouse_pos_l - cursor_pos.y) / 100.0f);
                 m_x_mouse_pos_l = cursor_pos.x;
                 m_y_mouse_pos_l = cursor_pos.y;
             }
             else {
-                rot_delta.z += (m_x_mouse_pos_l - cursor_pos.x) / 5.0;
-                rot_delta.y -= (m_y_mouse_pos_l - cursor_pos.y) / 5.0;
+                rot_delta.z += (m_x_mouse_pos_l - cursor_pos.x) / 5.0f;
+                rot_delta.y -= (m_y_mouse_pos_l - cursor_pos.y) / 5.0f;
                 m_x_mouse_pos_l = cursor_pos.x;
                 m_y_mouse_pos_l = cursor_pos.y;
             }
@@ -94,30 +107,36 @@ class Editor : public EngineCore::Application {
         camera_pos_update();
     }
 
-    void on_mouse_key_activity(const EngineCore::MouseKeyCode key_code, const double x, const double y, const bool pressed) override {
+    void on_mouse_key_activity(const EngineCore::MouseKeyCode key_code, const float x, const float y, const bool pressed) override {
         m_x_mouse_pos_l = x;
         m_y_mouse_pos_l = y;
     }
 
-    virtual void on_UI_update() override {
+    void on_UI_update() override {
         setup_dockspace_menu();
 
         camera_far = camera.get_far_plane();
-        camera_near = camera.get_near_plane();
         camera_fov = camera.get_field_of_view();
 
         ImGui::Begin("Camera options");
-        ImGui::SliderFloat("Far plain", &camera_far, camera_near+1, 1000);
-        ImGui::SliderFloat("Near plain", &camera_near, 0.100f, camera_far-1);
-        ImGui::SliderAngle("FOV", &camera_fov, 50, 110);
-        ImGui::Checkbox("Perspective Camera", &m_perspective_camera);
 
+        if (ImGui::SliderFloat("Far plain", &camera_far, 10, 150)) {
+            camera.set_far_plane(camera_far);
+        }
+        if (ImGui::SliderAngle("FOV", &camera_fov, 50, 110)) {
+            camera.set_field_of_view(camera_fov);
+        }
+        if (ImGui::Checkbox("Perspective Camera", &m_perspective_camera)) {
+            camera.set_projection_mode((m_perspective_camera ? EngineCore::Camera::ProjectionMode::Perspective : EngineCore::Camera::ProjectionMode::Orthographic));
+        }
+        ImGui::SliderFloat3("Light pos", light_pos, -10, 10);
+        ImGui::ColorEdit3("Light col", light_col);
+        ImGui::SliderFloat("Ambient factor", &ambient_factor, 0.1f, 5.f);
+        ImGui::SliderFloat("Diffuse factor", &diffuse_factor, 0.1f, 5.f);
+        ImGui::SliderFloat("Specular factor", &specular_factor, 0.1f, 5.f);
+        ImGui::SliderFloat("Shinnines", &shine_factor, 5.f, 100.f);
         ImGui::End();
 
-        camera.set_far_plane(camera_far);
-        camera.set_near_plane(camera_near);
-        camera.set_field_of_view(camera_fov);
-        camera.set_projection_mode((m_perspective_camera ? EngineCore::Camera::ProjectionMode::Perspective : EngineCore::Camera::ProjectionMode::Orthographic));
     };
 
     void setup_dockspace_menu() {
@@ -137,7 +156,6 @@ class Editor : public EngineCore::Application {
         ImGui::Begin("DockSpace", nullptr, window_flags);
         ImGui::PopStyleVar(3);
 
-        ImGuiIO& io = ImGui::GetIO();
         ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 
@@ -168,6 +186,7 @@ class Editor : public EngineCore::Application {
         }
         ImGui::End();
     }
+
 };
 
 

@@ -104,11 +104,8 @@ namespace EngineCore {
 		vertexBuffer.m_id = 0;
 	}
 
-	void VertexBuffer::bind() const {
-		glBindBuffer(GL_ARRAY_BUFFER, m_id);
-	}
+	uint32_t VertexBuffer::get_handle() const {
+		return m_id;
+	};
 
-	void VertexBuffer::unbind() {
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	}
 }

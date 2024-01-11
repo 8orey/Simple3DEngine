@@ -8,7 +8,7 @@ namespace EngineCore {
 
 	class Renderer_OpenGL {
 	public:
-		static bool init(GLFWwindow* pWindow);
+		static bool init(GLFWwindow* pWindow, const bool debug);
 
 		static void draw(const VertexArray& vertex_arr);
 		static void set_clear_color(const float color[4]);

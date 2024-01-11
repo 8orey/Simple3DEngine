@@ -22,6 +22,7 @@ set(ENGINE_PRIVATE_INCLUDES
     src/EngineCore/Rendering/OpenGL/Texture2D.hpp 
 
     src/EngineCore/Modules/UIModule.hpp
+    src/EngineCore/Modules/FileRead.hpp 
 )
 
 set(ENGINE_PRIVATE_SOURCES
@@ -38,6 +39,7 @@ set(ENGINE_PRIVATE_SOURCES
     src/EngineCore/Rendering/OpenGL/Texture2D.cpp 
 
     src/EngineCore/Modules/UIModule.cpp
+    src/EngineCore/Modules/FileRead.cpp 
 )
 
 set(ENGINE_ALL_SOURCES 

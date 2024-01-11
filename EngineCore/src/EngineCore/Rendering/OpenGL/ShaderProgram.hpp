@@ -20,8 +20,10 @@ namespace EngineCore {
 		static void unbind();
 		bool is_compiled() const { return m_isCompiled; };
 		void set_mat4(const char* name, const glm::mat4& mat) const;
+		void set_mat3(const char* name, const glm::mat3& mat) const;
 		void set_int(const char* name, const int num) const;
 		void set_float(const char* name, const float num) const;
+		void set_vec3(const char* name, const float x, const float y, const float z) const;
 
 	private:
 		bool m_isCompiled;
