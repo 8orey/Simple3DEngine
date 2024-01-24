@@ -10,7 +10,7 @@ namespace EngineCore {
 
 	class Application {
 	public:
-		
+
 		Application();
 
 		virtual ~Application();
@@ -28,7 +28,7 @@ namespace EngineCore {
 		virtual int start(size_t WINDOW_WIDTH, size_t WINDOW_HEIGHT, const char* title);
 
 		virtual void on_update() {};
-		
+
 		virtual void on_UI_update() {};
 
 		virtual void on_mouse_key_activity(const MouseKeyCode key_code, const float x, const float y, const bool pressed) {};
@@ -37,12 +37,19 @@ namespace EngineCore {
 
 		void close();
 
-		float light_pos[3]{ 0.f, 0.f, 0.f };
-		float light_col[3]{ 1.f, 1.f, 1.f };
-		float ambient_factor = 0.1f;
-		float diffuse_factor = 0.1f;
-		float specular_factor = 1.f;
-	    float shine_factor = 32.f;
+		struct Light {
+			glm::vec3 color;
+			
+			glm::vec3 ambient;
+			glm::vec3 diffuse;
+			glm::vec3 specular;
+			float shininess;
+
+		} light;
+
+		float background_color[4] = { 0.345f, 0.510f, 0.510f, 0.f };
+
+		float light_intense = 1;
 
 		Camera camera;
 	private:

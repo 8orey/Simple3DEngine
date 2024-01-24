@@ -24,6 +24,7 @@ namespace EngineCore {
 		void set_int(const char* name, const int num) const;
 		void set_float(const char* name, const float num) const;
 		void set_vec3(const char* name, const float x, const float y, const float z) const;
+		void set_vec3(const char* name, const glm::vec3& vec) const;
 
 	private:
 		bool m_isCompiled;

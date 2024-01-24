@@ -7,9 +7,9 @@
 #include "IMGUI/imgui.h"
 #include <imgui_internal.h>
 #include <glm/trigonometric.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
-float MOVE_SPEED = 0.025f;
-float ROTATE_SPEED = 0.5f;
+#include <format>
 
 class Editor : public EngineCore::Application {
 
@@ -17,6 +17,9 @@ class Editor : public EngineCore::Application {
     float m_y_mouse_pos_l = 0.0f;
     bool m_perspective_camera = true;
 
+    float MOVE_SPEED = 0.025f;
+    float ROTATE_SPEED = 0.5f;
+    
     float camera_far{};
     float camera_near{};
     float camera_fov{};
@@ -33,6 +36,8 @@ class Editor : public EngineCore::Application {
         camera_fov = camera.get_field_of_view();
         camera_viewport_w = camera.get_viewport_width();
         camera_viewport_h = camera.get_viewport_height();
+
+        light.color = { 1.f, 1.f, 1.f };
     }
 
     void camera_pos_update() {
@@ -129,12 +134,12 @@ class Editor : public EngineCore::Application {
         if (ImGui::Checkbox("Perspective Camera", &m_perspective_camera)) {
             camera.set_projection_mode((m_perspective_camera ? EngineCore::Camera::ProjectionMode::Perspective : EngineCore::Camera::ProjectionMode::Orthographic));
         }
-        ImGui::SliderFloat3("Light pos", light_pos, -10, 10);
-        ImGui::ColorEdit3("Light col", light_col);
-        ImGui::SliderFloat("Ambient factor", &ambient_factor, 0.1f, 5.f);
-        ImGui::SliderFloat("Diffuse factor", &diffuse_factor, 0.1f, 5.f);
-        ImGui::SliderFloat("Specular factor", &specular_factor, 0.1f, 5.f);
-        ImGui::SliderFloat("Shinnines", &shine_factor, 5.f, 100.f);
+
+        ImGui::ColorEdit3("Light col", glm::value_ptr(light.color));
+
+        ImGui::ColorEdit3("Background", background_color);
+
+        ImGui::SliderFloat("Light intense", &light_intense, -1, 15);
         ImGui::End();
 
     };
@@ -192,6 +197,7 @@ class Editor : public EngineCore::Application {
 
 
 int main() {
+
     Editor App;
     auto exitCode = App.start(512, 512, "3D_Engine");
     return exitCode;

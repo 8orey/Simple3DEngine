@@ -116,4 +116,8 @@ namespace EngineCore {
 		glUniform3f(glGetUniformLocation(m_id, name), x, y, z);
 	};
 
+	void ShaderProgram::set_vec3(const char* name, const glm::vec3& vec) const {
+		glUniform3f(glGetUniformLocation(m_id, name), vec[0], vec[1], vec[2]);
+	}
+
 }

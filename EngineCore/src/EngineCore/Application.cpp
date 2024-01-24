@@ -1,11 +1,14 @@
-
 #include <glad/glad.h>
-#include <sys/timeb.h>
 
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/trigonometric.hpp>
 #include <glm/ext/matrix_transform.hpp>
+#include <format>
+
+#include <string>
+#include <string_view>
+#include <format>
 
 #include <ImGui/imgui.h>
 
@@ -36,38 +39,38 @@ namespace EngineCore {
 
         // FRONT
         -1.0f, -1.f, -1.f,    -1.f,  0.f,  0.f,     0.f, 0.f,              // 0
-        -1.0f,  1.f, -1.f,    -1.f,  0.f,  0.f,     2.f, 0.f,              // 1
-        -1.0f,  1.f,  1.f,    -1.f,  0.f,  0.f,     2.f, 2.f,              // 2
-        -1.0f, -1.f,  1.f,    -1.f,  0.f,  0.f,     0.f, 2.f,              // 3
+        -1.0f,  1.f, -1.f,    -1.f,  0.f,  0.f,     1.f, 0.f,              // 1
+        -1.0f,  1.f,  1.f,    -1.f,  0.f,  0.f,     1.f, 1.f,              // 2
+        -1.0f, -1.f,  1.f,    -1.f,  0.f,  0.f,     0.f, 1.f,              // 3
 
         // BACK                                  
-         1.0f, -1.f, -1.f,     1.f,  0.f,  0.f,     2.f, 0.f,              // 4
+         1.0f, -1.f, -1.f,     1.f,  0.f,  0.f,     1.f, 0.f,              // 4
          1.0f,  1.f, -1.f,     1.f,  0.f,  0.f,     0.f, 0.f,              // 5
-         1.0f,  1.f,  1.f,     1.f,  0.f,  0.f,     0.f, 2.f,              // 6
-         1.0f, -1.f,  1.f,     1.f,  0.f,  0.f,     2.f, 2.f,              // 7
+         1.0f,  1.f,  1.f,     1.f,  0.f,  0.f,     0.f, 1.f,              // 6
+         1.0f, -1.f,  1.f,     1.f,  0.f,  0.f,     1.f, 1.f,              // 7
 
          // RIGHT
          -1.0f,  1.f, -1.f,     0.f,  1.f,  0.f,     0.f, 0.f,              // 8
-          1.0f,  1.f, -1.f,     0.f,  1.f,  0.f,     2.f, 0.f,              // 9
-          1.0f,  1.f,  1.f,     0.f,  1.f,  0.f,     2.f, 2.f,              // 10
-         -1.0f,  1.f,  1.f,     0.f,  1.f,  0.f,     0.f, 2.f,              // 11
+          1.0f,  1.f, -1.f,     0.f,  1.f,  0.f,     1.f, 0.f,              // 9
+          1.0f,  1.f,  1.f,     0.f,  1.f,  0.f,     1.f, 1.f,              // 10
+         -1.0f,  1.f,  1.f,     0.f,  1.f,  0.f,     0.f, 1.f,              // 11
 
          // LEFT
-         -1.0f, -1.f, -1.f,     0.f, -1.f,  0.f,     2.f, 0.f,              // 12
+         -1.0f, -1.f, -1.f,     0.f, -1.f,  0.f,     1.f, 0.f,              // 12
           1.0f, -1.f, -1.f,     0.f, -1.f,  0.f,     0.f, 0.f,              // 13
-          1.0f, -1.f,  1.f,     0.f, -1.f,  0.f,     0.f, 2.f,              // 14
-         -1.0f, -1.f,  1.f,     0.f, -1.f,  0.f,     2.f, 2.f,              // 15
+          1.0f, -1.f,  1.f,     0.f, -1.f,  0.f,     0.f, 1.f,              // 14
+         -1.0f, -1.f,  1.f,     0.f, -1.f,  0.f,     1.f, 1.f,              // 15
 
          // TOP
          -1.0f, -1.f,  1.f,     0.f,  0.f,  1.f,     0.f, 0.f,              // 16
-         -1.0f,  1.f,  1.f,     0.f,  0.f,  1.f,     2.f, 0.f,              // 17
-          1.0f,  1.f,  1.f,     0.f,  0.f,  1.f,     2.f, 2.f,              // 18
-          1.0f, -1.f,  1.f,     0.f,  0.f,  1.f,     0.f, 2.f,              // 19
+         -1.0f,  1.f,  1.f,     0.f,  0.f,  1.f,     1.f, 0.f,              // 17
+          1.0f,  1.f,  1.f,     0.f,  0.f,  1.f,     1.f, 1.f,              // 18
+          1.0f, -1.f,  1.f,     0.f,  0.f,  1.f,     0.f, 1.f,              // 19
 
           // BOTTOM
-          -1.0f, -1.f, -1.f,    0.f,  0.f, -1.f,     0.f, 2.f,              // 20
-          -1.0f,  1.f, -1.f,    0.f,  0.f, -1.f,     2.f, 2.f,              // 21
-           1.0f,  1.f, -1.f,    0.f,  0.f, -1.f,     2.f, 0.f,              // 22
+          -1.0f, -1.f, -1.f,    0.f,  0.f, -1.f,     0.f, 1.f,              // 20
+          -1.0f,  1.f, -1.f,    0.f,  0.f, -1.f,     1.f, 1.f,              // 21
+           1.0f,  1.f, -1.f,    0.f,  0.f, -1.f,     1.f, 0.f,              // 22
            1.0f, -1.f, -1.f,    0.f,  0.f, -1.f,     0.f, 0.f,              // 23
     };
 
@@ -86,19 +89,20 @@ namespace EngineCore {
     std::string light_vertex_shader;
     std::string light_fragment_shader;
 
-    std::unique_ptr<ShaderProgram> p_cube_shader_program;
+    std::unique_ptr<ShaderProgram> p_csp;
     std::unique_ptr<ShaderProgram> p_light_shader_program;
 
     std::unique_ptr<VertexBuffer> p_vbo;
     std::unique_ptr<IndexBuffer> p_index_buffer;
-    std::unique_ptr<Texture2D> p_texture;
+    std::unique_ptr<Texture2D> p_texture_diffuse;
+    std::unique_ptr<Texture2D> p_texture_specular;
     std::unique_ptr<VertexArray> p_vao;
 
     // ------ TO DELETE ------ //
 
-    float m_background_color[4] = { 0.345f, 0.510f, 0.510f, 0.f };
 
 	Application::Application() {
+        light = {};
         LOG_INFO("Open Application");
     };
 
@@ -107,12 +111,13 @@ namespace EngineCore {
 	};
 
 	int Application::start(size_t WINDOW_WIDTH, size_t WINDOW_HEIGHT, const char* title) {
-        
+
         m_pWindow = std::make_unique<Window>(title, WINDOW_WIDTH, WINDOW_HEIGHT);
         camera.set_viewport_size(
             static_cast<float>(WINDOW_WIDTH), 
             static_cast<float>(WINDOW_HEIGHT)
         );
+
 
         // Add Events
         {
@@ -172,28 +177,27 @@ namespace EngineCore {
             );
         }
 
+
+
         // Creating Texture        
         {
-            const size_t width_t = 1000, height_t = 1000, channels = 3, r = 25;
-            auto* data = new unsigned char[width_t * height_t * channels] {};
-            for (size_t i = 0; i < height_t * width_t * channels; ++i) {
-                if ((i / channels % width_t <= width_t / 2) and (i / channels / width_t <= height_t / 2)) {
-                    data[i] = 255;
-                }
-                if ((i / channels % width_t >= width_t / 2) and (i / channels / width_t >= height_t / 2)) {
-                    data[i] = 255;
-                }
-            }
-            p_texture = std::make_unique<Texture2D>(data, width_t, height_t);
-            delete[] data;
+            int width_t, height_t, channels;
+            
+            auto* data_diffuse = read_image("D:\\programming\\Simple3DEngine\\EngineCore\\container2_diffuse.jpg", width_t, height_t, channels);
+            p_texture_diffuse = std::make_unique<Texture2D>(data_diffuse, width_t, height_t);
+
+            auto* data_specular = read_image("D:\\programming\\Simple3DEngine\\EngineCore\\container2_specular.jpg", width_t, height_t, channels);
+            p_texture_specular = std::make_unique<Texture2D>(data_specular, width_t, height_t);
+
         }
+
 
         // Read, Compile, Link cube_shader_programm
         {
             cube_vertex_shader = read_file("D:\\programming\\Simple3DEngine\\EngineCore\\src\\EngineCore\\Shaders\\CubeVertexShader.glsl");
             cube_fragment_shader = read_file("D:\\programming\\Simple3DEngine\\EngineCore\\src\\EngineCore\\Shaders\\CubeFragmentShader.glsl");
-            p_cube_shader_program = std::make_unique<ShaderProgram>(cube_vertex_shader.c_str(), cube_fragment_shader.c_str());
-            if (!p_cube_shader_program->is_compiled()) {
+            p_csp = std::make_unique<ShaderProgram>(cube_vertex_shader.c_str(), cube_fragment_shader.c_str());
+            if (!p_csp->is_compiled()) {
                 return false;
             }
         }
@@ -229,64 +233,121 @@ namespace EngineCore {
         init();
 
 		while (!m_bCloseWindow) {
-            Renderer_OpenGL::set_clear_color(m_background_color);
+
+            auto start = glfwGetTime();
+
+            Renderer_OpenGL::set_clear_color(background_color);
             Renderer_OpenGL::clear();
 
             auto view_projection_matrix = camera.get_projection_matrix() * camera.get_view_matrix();
             auto view_matrix = camera.get_view_matrix();
 
+            std::array<glm::vec3, 2> light_pos {
+                glm::vec3(
+                    2 * sin(2.f / 3.f * glfwGetTime()), 2 * cos(2.f/3.f * glfwGetTime()), 1
+                ),
+
+                glm::vec3(
+                    2 * sin(3.14 + 2.f / 3.f * glfwGetTime()), 2 * cos(3.14 + 2.f / 3.f * glfwGetTime()), 1
+
+                )
+            };
+
+            struct light_ {
+                glm::vec3 color;
+                glm::vec3 pos;
+            };
+
+            std::array <glm::vec3, 7> objs{
+                glm::vec3{0, 0, 0},
+                glm::vec3{-10, 6, 3},
+                glm::vec3{-1, 3, 5},
+                glm::vec3{0, -3, 7},
+                glm::vec3{2, 3, 4},
+                glm::vec3{-3, 2, -1},
+                glm::vec3{5, 1, -12}
+            };
+
+
+            // Draw Light 
+            {   
+                p_light_shader_program->bind();
+
+                // light.color[0] = abs(sin(glfwGetTime() * 0.1f));
+                // light.color[1] = abs(sin(glfwGetTime() * 0.3f));
+                // light.color[2] = abs(sin(glfwGetTime() * 0.2f));
+
+                light.ambient = light.color * glm::vec3(0.05f);
+                light.diffuse = light.color * glm::vec3(0.4f);
+                light.specular = glm::vec3(light.color[0], light.color[1], light.color[2]);
+                light.shininess = 32.f;
+
+                p_light_shader_program->set_vec3("light_color", light.color);
+
+                for (const auto& cur_pos : light_pos) {
+
+                    const auto translate_matrix = glm::translate(glm::mat4(1.f), cur_pos);
+                    const auto scale_matrix = glm::scale(glm::mat4(1.f), glm::vec3(0.05f, 0.05f, 0.05f));
+
+                    p_light_shader_program->set_mat4("mvp_matrix", view_projection_matrix * translate_matrix * scale_matrix);
+
+                    Renderer_OpenGL::draw(*p_vao);
+                }   
+
+            }
+
             // Draw Cubes;
             {
-                p_cube_shader_program->bind();
+                p_csp->bind();
 
-                const std::array<const std::array<float, 3>, 6> trans = {
-                    std::array<float, 3>{1, 3, -1},
-                    std::array<float, 3>{1, -5,  1},
-                    std::array<float, 3>{5, 3, 5},
-                    std::array<float, 3>{-1, 1, -4},
-                    std::array<float, 3>{-1, 5, 4},
-                    std::array<float, 3>{-2, 1, 7},
-                };
+                p_texture_diffuse->bind(0);
+                p_texture_specular->bind(1);
 
-                p_texture->bind(0);
+                
+                int i = 0;
+                for (const auto& cur_pos : light_pos) {
+                    auto light_pos_eye = glm::vec3(view_matrix * glm::vec4(cur_pos, 1.0f));
+                    p_csp->set_vec3(std::format("pointLights[{}].position_eye", i).c_str(), light_pos_eye);
 
-                p_cube_shader_program->set_float("ambient_factor", ambient_factor);
-                p_cube_shader_program->set_float("diffuse_factor", diffuse_factor);
-                p_cube_shader_program->set_float("specular_factor", specular_factor);
-                p_cube_shader_program->set_float("shine_factor", shine_factor);
+                    p_csp->set_vec3(std::format("pointLights[{}].ambient", i).c_str(), light_intense * light.ambient);
+                    p_csp->set_vec3(std::format("pointLights[{}].diffuse", i).c_str(), light_intense * light.diffuse);
+                    p_csp->set_vec3(std::format("pointLights[{}].specular", i).c_str(), light_intense * light.specular);
+                    p_csp->set_float(std::format("pointLights[{}].shininess", i).c_str(), light.shininess);
 
-                p_cube_shader_program->set_vec3("light_color", light_col[0], light_col[1], light_col[2]);
+                    p_csp->set_float(std::format("pointLights[{}].constant", i).c_str(), 1.0f);
+                    p_csp->set_float(std::format("pointLights[{}].linear", i).c_str(), 0.09f);
+                    p_csp->set_float(std::format("pointLights[{}].quadro", i).c_str(), 0.032f);
+                    p_csp->set_float(std::format("pointLights[{}].intensity", i).c_str(), light_intense);
 
-                auto light_pos_eye = view_matrix * glm::vec4(light_pos[0], light_pos[1], light_pos[2], 1.0f);
-
-                p_cube_shader_program->set_vec3("light_pos_eye", light_pos_eye[0], light_pos_eye[1], light_pos_eye[2]);
-
+                    i++;
+                }
+                
                 const auto scale_matrix = glm::scale(glm::mat4(1.f), glm::vec3(0.5f, 0.5f, 0.5f));
 
-                for (const auto& tr : trans) {
-                    auto t_matrix = glm::translate(glm::mat4(1.f), glm::vec3(tr[0], tr[1], tr[2]));
-                    auto module_matrix = t_matrix * scale_matrix;
-                    p_cube_shader_program->set_mat4("module_view_matrix", camera.get_view_matrix() * module_matrix);
-                    p_cube_shader_program->set_mat4("mvp_matrix", view_projection_matrix * module_matrix);
-                    p_cube_shader_program->set_mat3("normal_matrix",  glm::transpose(glm::inverse(glm::mat3(camera.get_view_matrix()* module_matrix))));
+                p_csp->set_int("material.ambient", 0);
+                p_csp->set_int("material.diffuse", 0);
+                p_csp->set_int("material.specular", 1);
+                p_csp->set_float("material.shininess", 32.f);
+
+
+
+                float angle = 0;
+                for (const auto& object : objs) {
+                    auto t_matrix = glm::translate(glm::mat4(1.f), object);
+                    glm::mat4 r_matrix;
+                    r_matrix = glm::rotate(glm::mat4(1.f), angle, glm::vec3(1, 0, 0));
+                    r_matrix = glm::rotate(r_matrix, angle, glm::vec3(0, 1, 0));
+                    r_matrix = glm::rotate(r_matrix, angle, glm::vec3(0, 0, 1));
+                    auto module_matrix = t_matrix * r_matrix * scale_matrix;
+                    angle += 15;
+                    p_csp->set_mat4("module_view_matrix", camera.get_view_matrix() * module_matrix);
+                    p_csp->set_mat4("mvp_matrix", view_projection_matrix * module_matrix);
+                    p_csp->set_mat3("normal_matrix",  glm::transpose(glm::inverse(glm::mat3(camera.get_view_matrix()* module_matrix))));
+
                     Renderer_OpenGL::draw(*p_vao);
                 }
             }
             
-            // Draw Light 
-            {
-                auto translate_matrix = glm::translate(glm::mat4(1.f),
-                    glm::vec3(light_pos[0], light_pos[1], light_pos[2]));
-                const auto scale_matrix = glm::scale(glm::mat4(1.f), glm::vec3(0.1f, 0.1f, 0.1f));
-
-                p_light_shader_program->bind();
-                p_light_shader_program->set_mat4("mvp_matrix", view_projection_matrix * translate_matrix * scale_matrix);
-                p_light_shader_program->set_vec3("light_color", light_col[0], light_col[1], light_col[2]);
-
-                Renderer_OpenGL::draw(*p_vao);
-            }
-
-
             UIModule::UI_draw_begin();
             
             on_UI_update();
@@ -294,7 +355,11 @@ namespace EngineCore {
             UIModule::UI_draw_end();
 
 			m_pWindow->on_update();
+
 			on_update();
+
+            // LOG_INFO(1.f / (glfwGetTime() - start));
+
 		}
 		m_pWindow = nullptr;
 		return 0;

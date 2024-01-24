@@ -15,6 +15,9 @@ namespace EngineCore {
 		Texture2D(Texture2D&& texture) noexcept;
 
 		void bind(const uint32_t unit) const;
+		uint32_t get_id() const {
+			return m_id;
+		};
 
 	private:
 		uint32_t m_id = 0, m_width = 0, m_height = 0;
