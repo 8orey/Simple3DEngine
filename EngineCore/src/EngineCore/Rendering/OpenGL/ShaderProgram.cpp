@@ -29,7 +29,7 @@ namespace EngineCore {
 			LOG_CRITICAL("Vertex shader compile error!");
 			glDeleteShader(vertex_shader_id);
 			return;
-		}
+		} 
 
 		GLuint fragment_shader_id = 0;
 		if (!create_shader(fragment_shader_src, GL_FRAGMENT_SHADER, fragment_shader_id)) {

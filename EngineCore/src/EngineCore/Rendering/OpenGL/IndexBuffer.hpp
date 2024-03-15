@@ -3,9 +3,11 @@
 
 namespace EngineCore {
 
+	using GLuint = unsigned int;
+
 	class IndexBuffer {
 	public:
-		IndexBuffer(const void* data, const size_t count, const VertexBuffer::EUsage usage = VertexBuffer::EUsage::Static);
+		IndexBuffer(const std::vector<GLuint>& data, const VertexBuffer::EUsage usage = VertexBuffer::EUsage::Static);
 		~IndexBuffer();
 
 		IndexBuffer(const IndexBuffer&) = delete;

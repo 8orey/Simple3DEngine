@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <glm/glm.hpp>
 
 namespace EngineCore {
 	using uint32_t = unsigned int;
@@ -26,6 +27,12 @@ namespace EngineCore {
 		BufElement(const ShaderDataType type);
 	};
 
+	struct Vertex {
+		glm::vec3 position;
+		glm::vec3 normal;
+		glm::vec2 texture_position;
+	};
+
 	class BufferLayout {
 	public:
 		BufferLayout() = default;
@@ -48,7 +55,6 @@ namespace EngineCore {
 		std::vector<BufElement> m_elements;
 		size_t m_stride;
 	};
-
 	
 	class VertexBuffer {
 	public:
@@ -58,7 +64,7 @@ namespace EngineCore {
 			Stream,
 		};
 
-		VertexBuffer(const void* data, const size_t size, BufferLayout buf_layout, const EUsage usage = VertexBuffer::EUsage::Static);
+		VertexBuffer(const std::vector<Vertex>& data, BufferLayout buf_layout, const EUsage usage = VertexBuffer::EUsage::Static);
 		~VertexBuffer();
 
 		VertexBuffer(const VertexBuffer&) = delete;

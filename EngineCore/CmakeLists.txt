@@ -9,6 +9,7 @@ set(ENGINE_PUBLIC_INCLUDES
         includes/EngineCore/Camera.hpp 
         includes/EngineCore/Keys.hpp
         includes/EngineCore/Input.hpp 
+
 )
 
 set(ENGINE_PRIVATE_INCLUDES
@@ -20,9 +21,11 @@ set(ENGINE_PRIVATE_INCLUDES
     src/EngineCore/Rendering/OpenGL/IndexBuffer.hpp 
     src/EngineCore/Rendering/OpenGL/Renderer_OpenGL.hpp 
     src/EngineCore/Rendering/OpenGL/Texture2D.hpp 
+    src/EngineCore/Rendering/OpenGL/Mesh.hpp
 
     src/EngineCore/Modules/UIModule.hpp
     src/EngineCore/Modules/FileRead.hpp 
+
 )
 
 set(ENGINE_PRIVATE_SOURCES
@@ -37,6 +40,7 @@ set(ENGINE_PRIVATE_SOURCES
     src/EngineCore/Rendering/OpenGL/IndexBuffer.cpp 
     src/EngineCore/Rendering/OpenGL/Renderer_OpenGL.cpp 
     src/EngineCore/Rendering/OpenGL/Texture2D.cpp 
+    src/EngineCore/Rendering/OpenGL/Mesh.cpp
 
     src/EngineCore/Modules/UIModule.cpp
     src/EngineCore/Modules/FileRead.cpp 
@@ -60,18 +64,26 @@ target_include_directories(${ENGINE_PROJECT_NAME} PUBLIC includes)
 target_include_directories(${ENGINE_PROJECT_NAME} PRIVATE src)
 target_compile_features(${ENGINE_PROJECT_NAME} PUBLIC cxx_std_20)
 
-add_subdirectory(../external/glfw ${CMAKE_CURRENT_BINARY_DIR}/glfw)
-target_link_libraries(${ENGINE_PROJECT_NAME} PRIVATE glfw)
+set(PUBLIC_LINKED_LIB 
+    spdlog 
+    assimp 
+)
 
-add_subdirectory(../external/spdlog ${CMAKE_CURRENT_BINARY_DIR}/spdlog)
-target_link_libraries(${ENGINE_PROJECT_NAME} PUBLIC spdlog)
+set(PRIVATE_LINKED_LIB
+    glfw 
+    glad 
+    glm 
+)
 
-add_subdirectory(../external/glad ${CMAKE_CURRENT_BINARY_DIR}/glad)
-target_link_libraries(${ENGINE_PROJECT_NAME} PRIVATE glad)
+foreach(LIB_NAME ${PUBLIC_LINKED_LIB}) 
+    add_subdirectory(../external/${LIB_NAME} ${CMAKE_CURRENT_BINARY_DIR}/${LIB_NAME})
+    target_link_libraries(${ENGINE_PROJECT_NAME} PUBLIC ${LIB_NAME})
+endforeach()
 
-add_subdirectory(../external/glm ${CMAKE_CURRENT_BINARY_DIR}/glm)
-target_link_libraries(${ENGINE_PROJECT_NAME} PRIVATE glm)
-
+foreach(LIB_NAME ${PRIVATE_LINKED_LIB})
+    add_subdirectory(../external/${LIB_NAME} ${CMAKE_CURRENT_BINARY_DIR}/${LIB_NAME})
+    target_link_libraries(${ENGINE_PROJECT_NAME} PRIVATE ${LIB_NAME})
+endforeach()
 
 
 set(IMGUI_INCLUDES
@@ -102,4 +114,8 @@ target_link_libraries(IMGUI PRIVATE glad glfw)
 target_link_libraries(${ENGINE_PROJECT_NAME} PRIVATE IMGUI)
 
 include_directories(../external/stb_image)
-link_directories(../extern/stb_image)
+link_directories(../external/stb_image)
+
+add_executable(${ENGINE_PROJECT_NAME}
+    EngineCore/Shaders/LightVertexShader.glsl 
+)

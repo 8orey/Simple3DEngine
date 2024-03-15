@@ -1,4 +1,6 @@
+#pragma once
 
+#include "EngineCore/Modules/FileRead.hpp"
 
 namespace EngineCore {
 	using uint32_t = unsigned int;
@@ -6,7 +8,14 @@ namespace EngineCore {
 	class Texture2D {
 	public:
 
-		Texture2D(const unsigned char* data, const uint32_t width, const uint32_t height);
+		enum type : char {
+			ambient = 'a',
+			diffuse = 'd',
+			specular = 's',
+			none = 'n',
+		};
+
+		Texture2D(Image_t const& img, type t);
 		~Texture2D();
 
 		Texture2D(const Texture2D&) = delete;
@@ -18,9 +27,15 @@ namespace EngineCore {
 		uint32_t get_id() const {
 			return m_id;
 		};
+		type get_type() const {
+			return m_type;
+		}
 
 	private:
-		uint32_t m_id = 0, m_width = 0, m_height = 0;
+		uint32_t m_id = 0;
+		uint32_t m_width = 0;
+		uint32_t m_height = 0;
+		type m_type;
 	};
 
 

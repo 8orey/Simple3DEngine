@@ -41,6 +41,10 @@ namespace EngineCore {
 
 		glm::vec2 get_current_cursor_pos() const;
 
+		GLFWwindow *const & get_window_ptr() {
+			return m_pWindow;
+		}
+
 	private:
 		struct WindowData {
 			std::string title;

@@ -37,19 +37,14 @@ namespace EngineCore {
 
 		void close();
 
-		struct Light {
-			glm::vec3 color;
-			
-			glm::vec3 ambient;
-			glm::vec3 diffuse;
-			glm::vec3 specular;
-			float shininess;
-
-		} light;
-
 		float background_color[4] = { 0.345f, 0.510f, 0.510f, 0.f };
 
 		float light_intense = 1;
+
+		glm::vec3 light_color_global = { 1.f, 1.f, 1.f };
+
+		int cnt_cubes = 1;
+		int cnt_lights = 1;
 
 		Camera camera;
 	private:

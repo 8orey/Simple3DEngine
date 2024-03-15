@@ -17,11 +17,11 @@ namespace EngineCore {
 		return GL_STREAM_DRAW;
 	}
 
-	IndexBuffer::IndexBuffer(const void* data, const size_t count, const VertexBuffer::EUsage usage)
-		: m_count(count) {
+	IndexBuffer::IndexBuffer(const std::vector<GLuint>& data, const VertexBuffer::EUsage usage)
+		: m_count(data.size()) {
 		glGenBuffers(1, &m_id);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(GLuint), data, usage_to_GLenum(usage));
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.size() * sizeof(GLuint), data.data(), usage_to_GLenum(usage));
 	}
 
 	IndexBuffer::~IndexBuffer() {

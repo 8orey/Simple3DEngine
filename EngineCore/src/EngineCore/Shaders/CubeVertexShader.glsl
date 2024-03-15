@@ -18,7 +18,7 @@ out Fragment frag;
 
 void main() {
     frag.texture_position = texture_coord;
-	frag.normal_eye = normal_matrix * normal_vec;
+    frag.normal_eye = normal_matrix * normal_vec;
     frag.position_eye = vec3(module_view_matrix * vec4(vertex_position, 1.0f));
     gl_Position = mvp_matrix * vec4(vertex_position, 1.0f);
 }

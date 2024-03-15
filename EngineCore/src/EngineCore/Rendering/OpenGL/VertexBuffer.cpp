@@ -5,6 +5,7 @@
 
 #include <glad/glad.h>
 
+#include <glm/glm.hpp>
 
 namespace EngineCore {
 
@@ -81,12 +82,12 @@ namespace EngineCore {
 		,offset(0)
 	{}
 
-	VertexBuffer::VertexBuffer(const void* data, const size_t size, BufferLayout buf_layout, const EUsage usage)
+	VertexBuffer::VertexBuffer(const std::vector<Vertex>& data, BufferLayout buf_layout, const EUsage usage)
 		: m_buffer_layout(std::move(buf_layout))
 	{
 		glGenBuffers(1, &m_id);
 		glBindBuffer(GL_ARRAY_BUFFER, m_id);
-		glBufferData(GL_ARRAY_BUFFER, size, data, usage_to_GLenum(usage));
+		glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(Vertex), data.data(), usage_to_GLenum(usage));
 	}
 
 	VertexBuffer::~VertexBuffer() {

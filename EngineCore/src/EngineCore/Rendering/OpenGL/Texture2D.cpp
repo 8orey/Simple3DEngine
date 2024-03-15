@@ -6,14 +6,16 @@
 namespace EngineCore {
 
 	using uint32_t = unsigned int;
-	Texture2D::Texture2D(const unsigned char* data, const uint32_t width, const uint32_t height) 
-		: m_width(width)
-		, m_height(height)
+
+    Texture2D::Texture2D(Image_t const& img, Texture2D::type t):
+        m_width(img.width), 
+        m_height(img.height),
+        m_type(t)
 	{
-        const GLsizei mip_levels = static_cast<GLsizei>(log2(std::max(width, height))) + 1;
+        const GLsizei mip_levels = static_cast<GLsizei>(log2(std::max(img.width, img.height))) + 1;
         glCreateTextures(GL_TEXTURE_2D, 1, &m_id);
-        glTextureStorage2D(m_id, mip_levels, GL_RGB8, width, height);
-        glTextureSubImage2D(m_id, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glTextureStorage2D(m_id, mip_levels, GL_RGB8, img.width, img.height);
+        glTextureSubImage2D(m_id, 0, 0, 0, img.width, img.height, GL_RGB, GL_UNSIGNED_BYTE, img.image);
         glTextureParameteri(m_id, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTextureParameteri(m_id, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTextureParameteri(m_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -30,9 +32,11 @@ namespace EngineCore {
         m_id = texture.m_id;
         m_width = texture.m_width;
         m_height = texture.m_height;
+        m_type = texture.m_type;
         texture.m_id = 0;
         texture.m_width = 0;
         texture.m_height = 0;
+        texture.m_type = Texture2D::type::none;
         return *this;
     }
 
@@ -41,9 +45,11 @@ namespace EngineCore {
         m_id = texture.m_id;
         m_width = texture.m_width;
         m_height = texture.m_height;
+        m_type = texture.m_type;
         texture.m_id = 0;
         texture.m_width = 0;
         texture.m_height = 0;
+        texture.m_type = Texture2D::type::none;
     }
 
     void Texture2D::bind(const uint32_t unit) const {

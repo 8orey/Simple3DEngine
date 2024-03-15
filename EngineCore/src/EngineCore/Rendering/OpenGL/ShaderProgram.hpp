@@ -27,7 +27,7 @@ namespace EngineCore {
 		void set_vec3(const char* name, const glm::vec3& vec) const;
 
 	private:
-		bool m_isCompiled;
+		bool m_isCompiled = false;
 		uint32_t m_id = 0;
 	};
 
