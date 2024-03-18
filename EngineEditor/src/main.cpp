@@ -1,6 +1,5 @@
 
 #include <EngineCore/Application.hpp>
-#include <EngineCore/Logs.hpp>
 #include <EngineCore/Input.hpp>
 #include <EngineCore/Camera.hpp>
 #include <EngineCore/Event.hpp>
@@ -9,7 +8,6 @@
 #include <imgui_internal.h>
 #include <glm/trigonometric.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
 
 class Editor : public EngineCore::Application {
 
@@ -23,19 +21,15 @@ class Editor : public EngineCore::Application {
     float camera_far = 0;
     float camera_near = 0;
     float camera_fov = 0;
-    float camera_viewport_w = 0;
-    float camera_viewport_h = 0;
 
     void init() override {
         camera.set_far_plane(100.f);
         camera.set_near_plane(0.1f);
         camera.set_field_of_view(glm::radians(80.f));
-    
-        camera_far = camera.get_far_plane();
-        camera_near = camera.get_near_plane();
-        camera_fov = camera.get_field_of_view();
-        camera_viewport_w = camera.get_viewport_width();
-        camera_viewport_h = camera.get_viewport_height();
+        m_background_color[0] = 0.345f;
+        m_background_color[1] = 0.510f;
+        m_background_color[2] = 0.510f;
+        m_background_color[3] = 0.f;
     }
 
     void camera_pos_update() {
@@ -113,7 +107,7 @@ class Editor : public EngineCore::Application {
         }
     }
 
-    void on_mouse_key_activity(const EngineCore::MouseKeyCode key_code, const float x, const float y, const bool pressed) override {
+    void on_mouse_key_activity(const EngineCore::MouseKeyCode key_code, float x, float y, bool pressed) override {
         m_x_mouse_pos_l = x;
         m_y_mouse_pos_l = y;
     }
@@ -136,15 +130,7 @@ class Editor : public EngineCore::Application {
             camera.set_projection_mode((m_perspective_camera ? EngineCore::Camera::ProjectionMode::Perspective : EngineCore::Camera::ProjectionMode::Orthographic));
         }
 
-        ImGui::ColorEdit3("Background", background_color);
-
-        ImGui::InputFloat("Light intense", &light_intense);
-
-        ImGui::ColorEdit3("Light color", glm::value_ptr(light_color_global));
-
-        ImGui::InputInt("Count cubes", &cnt_cubes);
-
-        ImGui::InputInt("Count lights", &cnt_lights);
+        ImGui::ColorEdit3("Background", m_background_color);
 
         ImGui::End();
     };
@@ -200,11 +186,8 @@ class Editor : public EngineCore::Application {
 };
 
 
+
 int main() {
-
     Editor App;
-
-    auto exitCode = App.start(1024, 728, "3D Engine");
-
-    return exitCode;
+    return App.start(1024, 768, "3DEngine");
 }

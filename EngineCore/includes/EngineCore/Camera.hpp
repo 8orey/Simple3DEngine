@@ -40,6 +40,7 @@ namespace EngineCore {
 
 		const glm::mat4& get_view_matrix();
 		const glm::mat4& get_projection_matrix() const;
+		glm::mat4 get_view_projection_matrix() const;
 
 		void move_forward(const float delta);
 		void move_right(const float delta);

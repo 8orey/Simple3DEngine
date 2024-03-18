@@ -105,6 +105,7 @@ namespace EngineCore {
 		return m_projection_mode;
 	};
 
+
 	float  Camera::get_far_plane() const {
 		return m_far_clip_plane;
 	}
@@ -130,6 +131,11 @@ namespace EngineCore {
 	const glm::mat4& Camera::get_projection_matrix() const {
 		return m_projection_matrix;
 	}
+
+	glm::mat4 Camera::get_view_projection_matrix() const {
+		return m_projection_matrix * m_view_matrix;
+	}
+
 
 	void Camera::move_forward(const float delta) {
 		if (delta != 0.f) {

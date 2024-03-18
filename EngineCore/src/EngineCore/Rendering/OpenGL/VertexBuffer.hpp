@@ -33,6 +33,7 @@ namespace EngineCore {
 		glm::vec2 texture_position;
 	};
 
+
 	class BufferLayout {
 	public:
 		BufferLayout() = default;
@@ -54,6 +55,12 @@ namespace EngineCore {
 	private:
 		std::vector<BufElement> m_elements;
 		size_t m_stride;
+	};
+
+	static BufferLayout StandartPNT_layout{
+		ShaderDataType::Float3,
+		ShaderDataType::Float3,
+		ShaderDataType::Float2,
 	};
 	
 	class VertexBuffer {

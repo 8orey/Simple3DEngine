@@ -35,18 +35,29 @@ namespace EngineCore {
 
 		glm::vec2 get_current_mouse_position() const;
 
+		void set_title(const char* title) const;
+
 		void close();
 
-		float background_color[4] = { 0.345f, 0.510f, 0.510f, 0.f };
-
-		float light_intense = 1;
-
-		glm::vec3 light_color_global = { 1.f, 1.f, 1.f };
-
-		int cnt_cubes = 1;
-		int cnt_lights = 1;
-
 		Camera camera;
+		
+		float m_background_color[4];
+
+		struct PointLight {
+			glm::vec3 position = glm::vec3(0.f);
+
+			glm::vec3 ambient = glm::vec3(1.0f, 1.0f, 1.0f);
+			glm::vec3 diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+			glm::vec3 specular = glm::vec3(1.0f, 1.0f, 1.0f);
+			float shininess = 32.0f;
+
+			float linear = 0.19f;
+			float quadro = 0.05f;
+			float intensity = 12.0f;
+		};
+
+		std::vector<PointLight> point_lights;
+
 	private:
 
 		std::unique_ptr<class Window> m_pWindow;

@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <format>
+#include <memory>
 
 #include "EngineCore/Rendering/OpenGL/VertexArray.hpp"
 #include "EngineCore/Rendering/OpenGL/VertexBuffer.hpp"
@@ -25,12 +26,12 @@ namespace EngineCore {
 	):
 		vertices(vertices),
 		textures(textures),
-		VBO(vertices, layout, usage),
-		VAO(),
-		IBO(indices, usage)
+		pVBO(std::make_shared<VertexBuffer>(vertices, layout, usage)),
+		pVAO(std::make_shared<VertexArray>()),
+		pIBO(std::make_shared<IndexBuffer>(indices, usage))
 	{
-		VAO.add_vertex_buffer(VBO);
-		VAO.set_index_buffer(IBO);
+		pVAO->add_vertex_buffer(*pVBO);
+		pVAO->set_index_buffer(*pIBO);
 	}
 
 
@@ -50,20 +51,26 @@ namespace EngineCore {
 		return { "none", -1 };
 	}
 
-	void Mesh::draw(ShaderProgram& shader) {
+	void Mesh::draw(ShaderProgram const& shader) const {
 		shader.bind();
 
 		size_t index_array[3] = { 0, 0, 0 };
-		size_t cur_index = 0;
+		int cur_index = 0;
 
 		for (auto const& texture : textures) {
+
+			if (texture == nullptr) {
+				LOG_ERROR("[Mesh] EMPTY TEXTURE");
+			}
+
 			auto [name, index] = texture_type_to_string(texture->get_type(), index_array);
 			shader.set_int(std::format("material.{}{}", name, index).c_str(), cur_index);
 			texture->bind(cur_index++);
 		}
 
-		Renderer_OpenGL::draw(VAO);
-		shader.unbind();
+		// LOG_INFO("MESH_TEXURES_DATA: ambient = {} | diffuse = {} | specular = {}", index_array[0], index_array[1], index_array[2]);
+
+		Renderer_OpenGL::draw(*pVAO);
 	}
 
 

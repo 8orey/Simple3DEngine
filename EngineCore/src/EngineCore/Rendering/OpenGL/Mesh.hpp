@@ -16,9 +16,6 @@ namespace EngineCore {
 
 	class Mesh {
 	public:
-		std::vector<Vertex> vertices;
-		std::vector<std::shared_ptr<Texture2D>> textures;
-
 		Mesh(
 			std::vector<Vertex> const& vertices,
 			std::vector<std::shared_ptr<Texture2D>> const& textures,
@@ -27,12 +24,14 @@ namespace EngineCore {
 			VertexBuffer::EUsage usage
 		);
 
-		void draw(ShaderProgram& shader);
+		void draw(ShaderProgram const& shader) const;
 	private:
-		VertexBuffer VBO;
-		VertexArray VAO;
-		IndexBuffer IBO;
+		std::vector<Vertex> vertices;
+		std::vector<std::shared_ptr<Texture2D>> textures;
 
+		std::shared_ptr<VertexBuffer> pVBO;
+		std::shared_ptr<VertexArray> pVAO;
+		std::shared_ptr<IndexBuffer> pIBO;
 	};
 
 

@@ -45,6 +45,10 @@ namespace EngineCore {
 			return m_pWindow;
 		}
 
+		void set_title(const char* title) const {
+			glfwSetWindowTitle(m_pWindow, title);
+		}
+
 	private:
 		struct WindowData {
 			std::string title;

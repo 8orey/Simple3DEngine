@@ -4,6 +4,9 @@
 #include "FileRead.hpp"
 #include "EngineCore/Logs.hpp"
 
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+
 #define STB_IMAGE_IMPLEMENTATION 1
 #include <stb_image.h>
 
@@ -13,14 +16,19 @@ namespace EngineCore {
 		free(this->image);
 	}
 
-	Image_t::Image_t(unsigned char* img, int w, int h, int c) :
-		image(img), width(w), height(h), channels(c)
+	Image_t::Image_t(unsigned char* img, int w, int h, int c, image_format format):
+		image(img), width(w), height(h), channels(c), f(format)
 	{}
 
 	Image_t read_image(const char* path) {
 		int width, height, channels;
 		unsigned char* data = stbi_load(path, &width, &height, &channels, 0);
-		return { data, width, height, channels };
+		LOG_INFO("[IMAGE DATA] size = {}x{}x{} | path = {}", width, height, channels, path);
+		if (data == NULL) {
+			LOG_ERROR("READ_IMAGE_ERROR: Failed read from path: {}", path);
+		}
+
+		return { data, width, height, channels, (channels == 3 ? image_format::JPEG : image_format::PNG)};
 	}
 
 	std::string read_file(const std::string& name) {
@@ -36,6 +44,18 @@ namespace EngineCore {
 		return "";
 	};
 
+	static Assimp::Importer importer;
+
+	const aiScene* import_scene(std::string const& path, uint32_t flags) {
+		auto scene = importer.ReadFile(path.c_str(), flags);
+
+		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+			LOG_CRITICAL("ASSIMP [IMPORT SCENE ERROR]: {}", importer.GetErrorString());
+			return nullptr;
+		}
+
+		return scene;
+	}
 
 
 

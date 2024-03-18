@@ -1,6 +1,7 @@
 
 #include "ShaderProgram.hpp"
 #include "EngineCore/Logs.hpp"
+#include "EngineCore/Modules/FileRead.hpp"
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -22,17 +23,20 @@ namespace EngineCore {
 		}
 		return true;
 	}
+	
+	ShaderProgram::ShaderProgram(const char* path_vertex, const char* path_fragment) {
+		auto vertex_shader_src = read_file(path_vertex);
+		auto fragment_shader_src = read_file(path_fragment);
 
-	ShaderProgram::ShaderProgram(const char* vertex_shader_src, const char* fragment_shader_src) {
 		GLuint vertex_shader_id = 0;
-		if (!create_shader(vertex_shader_src, GL_VERTEX_SHADER, vertex_shader_id)) {
+		if (!create_shader(vertex_shader_src.c_str(), GL_VERTEX_SHADER, vertex_shader_id)) {
 			LOG_CRITICAL("Vertex shader compile error!");
 			glDeleteShader(vertex_shader_id);
 			return;
 		} 
 
 		GLuint fragment_shader_id = 0;
-		if (!create_shader(fragment_shader_src, GL_FRAGMENT_SHADER, fragment_shader_id)) {
+		if (!create_shader(fragment_shader_src.c_str(), GL_FRAGMENT_SHADER, fragment_shader_id)) {
 			LOG_CRITICAL("Fragment shader compile error!");
 			glDeleteShader(vertex_shader_id);
 			glDeleteShader(fragment_shader_id);
@@ -107,6 +111,10 @@ namespace EngineCore {
 	void ShaderProgram::set_int(const char* name, const int num) const {
 		glUniform1i(glGetUniformLocation(m_id, name), num);
 	};
+
+	void ShaderProgram::set_uint(const char* name, const unsigned int num) const {
+		glUniform1ui(glGetUniformLocation(m_id, name), num);
+	}
 
 	void ShaderProgram::set_float(const char* name, const float num) const {
 		glUniform1f(glGetUniformLocation(m_id, name), num);

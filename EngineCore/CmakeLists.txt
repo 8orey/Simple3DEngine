@@ -3,86 +3,60 @@ cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 set(ENGINE_PROJECT_NAME EngineCore)
 
 set(ENGINE_PUBLIC_INCLUDES
-        includes/EngineCore/Application.hpp 
-        includes/EngineCore/Logs.hpp 
-        includes/EngineCore/Event.hpp 
-        includes/EngineCore/Camera.hpp 
-        includes/EngineCore/Keys.hpp
-        includes/EngineCore/Input.hpp 
-
+    includes/EngineCore/Application.hpp 
+    includes/EngineCore/Logs.hpp 
+    includes/EngineCore/Event.hpp 
+    includes/EngineCore/Camera.hpp 
+    includes/EngineCore/Keys.hpp
+    includes/EngineCore/Input.hpp 
 )
 
 set(ENGINE_PRIVATE_INCLUDES
     includes/EngineCore/Window.hpp
- 
-    src/EngineCore/Rendering/OpenGL/ShaderProgram.hpp 
-    src/EngineCore/Rendering/OpenGL/VertexBuffer.hpp  
-    src/EngineCore/Rendering/OpenGL/VertexArray.hpp  
-    src/EngineCore/Rendering/OpenGL/IndexBuffer.hpp 
-    src/EngineCore/Rendering/OpenGL/Renderer_OpenGL.hpp 
-    src/EngineCore/Rendering/OpenGL/Texture2D.hpp 
-    src/EngineCore/Rendering/OpenGL/Mesh.hpp
-
-    src/EngineCore/Modules/UIModule.hpp
-    src/EngineCore/Modules/FileRead.hpp 
-
 )
 
-set(ENGINE_PRIVATE_SOURCES
-    src/EngineCore/Application.cpp
-    src/EngineCore/Window.cpp
-    src/EngineCore/Camera.cpp
-    src/EngineCore/Input.cpp 
-
-    src/EngineCore/Rendering/OpenGL/ShaderProgram.cpp
-    src/EngineCore/Rendering/OpenGL/VertexBuffer.cpp
-    src/EngineCore/Rendering/OpenGL/VertexArray.cpp 
-    src/EngineCore/Rendering/OpenGL/IndexBuffer.cpp 
-    src/EngineCore/Rendering/OpenGL/Renderer_OpenGL.cpp 
-    src/EngineCore/Rendering/OpenGL/Texture2D.cpp 
-    src/EngineCore/Rendering/OpenGL/Mesh.cpp
-
-    src/EngineCore/Modules/UIModule.cpp
-    src/EngineCore/Modules/FileRead.cpp 
-)
+file(GLOB ENGINE_PRIVATE_SOURCES src/EngineCore/*.cpp)
+file(GLOB ENGINE_MODULES_HEADERS src/EngineCore/Modules/*.hpp)
+file(GLOB ENGINE_MODULES_SOURCES src/EngineCore/Modules/*.cpp)
+file(GLOB ENGINE_OPENGL_HEADERS src/EngineCore/Rendering/OpenGL/*.hpp)
+file(GLOB ENGINE_OPENGL_SOURCES src/EngineCore/Rendering/OpenGL/*.cpp)
+file(GLOB ENGINE_SHADERS_SOURCES src/EngineCore/Shaders/*)
 
 set(ENGINE_ALL_SOURCES 
     ${ENGINE_PUBLIC_INCLUDES}
     ${ENGINE_PRIVATE_INCLUDES}
     ${ENGINE_PRIVATE_SOURCES}
+    ${ENGINE_OPENGL_HEADERS}
+    ${ENGINE_OPENGL_SOURCES}
+    ${ENGINE_MODULES_HEADERS}
+    ${ENGINE_MODULES_SOURCES}
+    ${ENGINE_SHADERS_SOURCES}
 )
 
-add_library(${ENGINE_PROJECT_NAME} STATIC 
-    ${ENGINE_ALL_SOURCES}
-)
-
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES 
-    ${ENGINE_ALL_SOURCES} 
-)
+add_library(${ENGINE_PROJECT_NAME} STATIC ${ENGINE_ALL_SOURCES})
+add_compile_definitions(PROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}/")
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${ENGINE_ALL_SOURCES})
 
 target_include_directories(${ENGINE_PROJECT_NAME} PUBLIC includes)
 target_include_directories(${ENGINE_PROJECT_NAME} PRIVATE src)
 target_compile_features(${ENGINE_PROJECT_NAME} PUBLIC cxx_std_20)
 
-set(PUBLIC_LINKED_LIB 
-    spdlog 
-    assimp 
-)
+set(PUBLIC_LINKED_LIB spdlog assimp)
 
-set(PRIVATE_LINKED_LIB
-    glfw 
-    glad 
-    glm 
-)
+set(PRIVATE_LINKED_LIB glfw glad glm)
+
+set(LIBRARIES_COMPILE_OPTIONS "/W0")
 
 foreach(LIB_NAME ${PUBLIC_LINKED_LIB}) 
-    add_subdirectory(../external/${LIB_NAME} ${CMAKE_CURRENT_BINARY_DIR}/${LIB_NAME})
+    add_subdirectory(../external/${LIB_NAME} ${CMAKE_CURRENT_BINARY_DIR}/external/${LIB_NAME})
     target_link_libraries(${ENGINE_PROJECT_NAME} PUBLIC ${LIB_NAME})
+    target_compile_options(${LIB_NAME} PRIVATE ${LIBRARIES_COMPILE_OPTIONS})
 endforeach()
 
 foreach(LIB_NAME ${PRIVATE_LINKED_LIB})
-    add_subdirectory(../external/${LIB_NAME} ${CMAKE_CURRENT_BINARY_DIR}/${LIB_NAME})
+    add_subdirectory(../external/${LIB_NAME} ${CMAKE_CURRENT_BINARY_DIR}/external/${LIB_NAME})
     target_link_libraries(${ENGINE_PROJECT_NAME} PRIVATE ${LIB_NAME})
+    target_compile_options(${LIB_NAME} PRIVATE ${LIBRARIES_COMPILE_OPTIONS})
 endforeach()
 
 
@@ -102,20 +76,14 @@ set(IMGUI_SOURCES
     ../external/ImGui/imgui_draw.cpp 
 )
 
-add_library(IMGUI STATIC 
-    ${IMGUI_INCLUDES}
-    ${IMGUI_SOURCES}
-)
+add_library(IMGUI STATIC ${IMGUI_INCLUDES} ${IMGUI_SOURCES})
 
 target_include_directories(IMGUI PUBLIC ../external)
 target_include_directories(IMGUI PUBLIC ../external/ImGui)
 
 target_link_libraries(IMGUI PRIVATE glad glfw)
-target_link_libraries(${ENGINE_PROJECT_NAME} PRIVATE IMGUI)
+target_link_libraries(${ENGINE_PROJECT_NAME} PUBLIC IMGUI)
+target_compile_options(IMGUI PUBLIC ${LIBRARIES_COMPILE_OPTIONS})
 
 include_directories(../external/stb_image)
 link_directories(../external/stb_image)
-
-add_executable(${ENGINE_PROJECT_NAME}
-    EngineCore/Shaders/LightVertexShader.glsl 
-)
