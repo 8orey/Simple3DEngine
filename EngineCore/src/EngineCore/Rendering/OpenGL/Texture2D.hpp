@@ -31,6 +31,13 @@ namespace EngineCore {
 			return m_type;
 		}
 
+		void free() {
+			m_id = 0;
+			m_width = 0;
+			m_height = 0;
+			m_type = Texture2D::type::none;
+		}
+
 	private:
 		uint32_t m_id = 0;
 		uint32_t m_width = 0;

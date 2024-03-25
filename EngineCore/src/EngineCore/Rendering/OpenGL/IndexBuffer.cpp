@@ -24,6 +24,7 @@ namespace EngineCore {
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.size() * sizeof(GLuint), data.data(), usage_to_GLenum(usage));
 	}
 
+
 	IndexBuffer::~IndexBuffer() {
 		glDeleteBuffers(1, &m_id);
 	}

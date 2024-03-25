@@ -9,6 +9,13 @@
 #include <glm/trigonometric.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <deque>
+#include <chrono>
+#include <ctime>
+#include <EngineCore/Logs.hpp>
+
+const char* TITLE = "3DEngine";
+
 class Editor : public EngineCore::Application {
 
     float m_x_mouse_pos_l = 0.0f;
@@ -21,6 +28,28 @@ class Editor : public EngineCore::Application {
     float camera_far = 0;
     float camera_near = 0;
     float camera_fov = 0;
+
+
+    std::chrono::system_clock::time_point start_timepoint = std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point last_timepoint = std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsed_seconds;
+    std::deque<double> fps_over{.0, .0, .0, .0, .0, .0, .0, .0, .0, .0};
+    double sum = 0;
+    double timed = 0;
+
+    void FPS_calc(void) {
+        elapsed_seconds = start_timepoint - last_timepoint;
+        last_timepoint = start_timepoint;
+        start_timepoint = std::chrono::system_clock::now();
+        sum -= fps_over.back(); 
+        fps_over.pop_back();
+        timed = elapsed_seconds.count();
+        sum += timed;
+        fps_over.push_front(timed);
+
+        auto string = std::format("{} | FPS: {}", TITLE, static_cast<size_t>(static_cast<double>(fps_over.size()) / sum));
+        set_title(string.c_str());
+    }
 
     void init() override {
         camera.set_far_plane(100.f);
@@ -101,10 +130,14 @@ class Editor : public EngineCore::Application {
     }
 
     void on_update() override {
+        FPS_calc();
         camera_pos_update();
         if (EngineCore::Input::is_key_pressed(EngineCore::KeyCode::KEY_ESCAPE)) {
             close();
         }
+
+
+
     }
 
     void on_mouse_key_activity(const EngineCore::MouseKeyCode key_code, float x, float y, bool pressed) override {

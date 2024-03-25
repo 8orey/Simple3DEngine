@@ -11,6 +11,12 @@
 #include "EngineCore/Rendering/OpenGL/ShaderProgram.hpp"
 #include "EngineCore/Rendering/OpenGL/Renderer_OpenGL.hpp"
 
+struct aiMesh;
+struct aiScene;
+struct aiMaterial;
+
+enum aiTextureType;
+
 
 namespace EngineCore {
 
@@ -18,20 +24,35 @@ namespace EngineCore {
 	public:
 		Mesh(
 			std::vector<Vertex> const& vertices,
-			std::vector<std::shared_ptr<Texture2D>> const& textures,
+			std::vector<Texture2D>& textures,
 			std::vector<GLuint> indices,
 			BufferLayout layout,
 			VertexBuffer::EUsage usage
 		);
 
-		void draw(ShaderProgram const& shader) const;
-	private:
-		std::vector<Vertex> vertices;
-		std::vector<std::shared_ptr<Texture2D>> textures;
+		Mesh(aiMesh* mesh, const aiScene* scene, const char* directory);
 
-		std::shared_ptr<VertexBuffer> pVBO;
-		std::shared_ptr<VertexArray> pVAO;
-		std::shared_ptr<IndexBuffer> pIBO;
+		Mesh& operator=(Mesh const&) = delete;
+		Mesh(Mesh const&) = delete;
+		Mesh& operator=(Mesh&&) = default;
+		Mesh(Mesh&&) = default;
+
+		void draw(ShaderProgram const& shader) const;
+
+		void raw_draw(ShaderProgram const& shader) const;
+
+	private:
+
+		void load_material_textures(
+			aiMaterial* mat, aiTextureType assimp_type, Texture2D::type type, std::string const& directory
+		);
+
+		std::vector<Vertex> vertices;
+		std::vector<Texture2D> textures;
+
+		std::unique_ptr<VertexBuffer> pVBO;
+		std::unique_ptr<VertexArray> pVAO;
+		std::unique_ptr<IndexBuffer> pIBO;
 	};
 
 

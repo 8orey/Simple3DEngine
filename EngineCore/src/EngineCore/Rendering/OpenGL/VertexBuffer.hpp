@@ -72,6 +72,8 @@ namespace EngineCore {
 		};
 
 		VertexBuffer(const std::vector<Vertex>& data, BufferLayout buf_layout, const EUsage usage = VertexBuffer::EUsage::Static);
+		VertexBuffer();
+		
 		~VertexBuffer();
 
 		VertexBuffer(const VertexBuffer&) = delete;
@@ -82,6 +84,7 @@ namespace EngineCore {
 		uint32_t get_handle() const;
 
 		const BufferLayout& get_layout() const { return m_buffer_layout; }
+
 
 	private:
 		uint32_t m_id = 0;

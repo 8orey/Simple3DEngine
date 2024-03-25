@@ -90,6 +90,10 @@ namespace EngineCore {
 		glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(Vertex), data.data(), usage_to_GLenum(usage));
 	}
 
+	VertexBuffer::VertexBuffer():
+		m_buffer_layout(StandartPNT_layout)
+	{}
+
 	VertexBuffer::~VertexBuffer() {
 		glDeleteBuffers(1, &m_id);
 	}

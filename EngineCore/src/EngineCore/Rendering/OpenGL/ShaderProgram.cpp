@@ -31,6 +31,7 @@ namespace EngineCore {
 		GLuint vertex_shader_id = 0;
 		if (!create_shader(vertex_shader_src.c_str(), GL_VERTEX_SHADER, vertex_shader_id)) {
 			LOG_CRITICAL("Vertex shader compile error!");
+			LOG_CRITICAL("PATH = {}", path_vertex);
 			glDeleteShader(vertex_shader_id);
 			return;
 		} 
@@ -38,6 +39,7 @@ namespace EngineCore {
 		GLuint fragment_shader_id = 0;
 		if (!create_shader(fragment_shader_src.c_str(), GL_FRAGMENT_SHADER, fragment_shader_id)) {
 			LOG_CRITICAL("Fragment shader compile error!");
+			LOG_CRITICAL("PATH = {}", path_fragment);
 			glDeleteShader(vertex_shader_id);
 			glDeleteShader(fragment_shader_id);
 			return;

@@ -16,8 +16,8 @@ namespace EngineCore {
 		free(this->image);
 	}
 
-	Image_t::Image_t(unsigned char* img, int w, int h, int c, image_format format):
-		image(img), width(w), height(h), channels(c), f(format)
+	Image_t::Image_t(unsigned char* img, int w, int h, int c, Image_t::format fmt):
+		image(img), width(w), height(h), channels(c), fmt(fmt)
 	{}
 
 	Image_t read_image(const char* path) {
@@ -28,7 +28,7 @@ namespace EngineCore {
 			LOG_ERROR("READ_IMAGE_ERROR: Failed read from path: {}", path);
 		}
 
-		return { data, width, height, channels, (channels == 3 ? image_format::JPEG : image_format::PNG)};
+		return { data, width, height, channels, (channels == 3 ? Image_t::format::JPEG : Image_t::format::PNG)};
 	}
 
 	std::string read_file(const std::string& name) {

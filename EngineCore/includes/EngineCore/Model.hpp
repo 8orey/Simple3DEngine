@@ -19,14 +19,15 @@ namespace EngineCore {
 
 	class Model {
 	private:
+
 		std::vector<Mesh> meshes;
 		std::string directory;
 
 		void load_model(std::string path);
 		void process_node(aiNode* node, const aiScene* scene);
-		Mesh process_mesh(aiMesh* mesh, const aiScene* scene);
 
-		std::vector<std::shared_ptr<Texture2D>> load_material_textures(aiMaterial* mat, aiTextureType type, Texture2D::type typeName);
+		Model(Model const&) = delete;
+		auto operator=(Model const&) = delete;
 
 	public:
 		Model(const char* path) {
@@ -35,7 +36,7 @@ namespace EngineCore {
 		}
 
 		void draw(ShaderProgram const& shader);
-
+		void raw_draw(ShaderProgram const& shader);
 	};
 
 }

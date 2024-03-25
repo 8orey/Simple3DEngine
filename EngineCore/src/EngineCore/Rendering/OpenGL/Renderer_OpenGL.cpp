@@ -113,8 +113,7 @@ namespace EngineCore {
 	}
 
 	void Renderer_OpenGL::clear() {
-		glClear(GL_COLOR_BUFFER_BIT);
-		glClear(GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
 	void Renderer_OpenGL::set_viewport(const uint32_t width, const uint32_t height, const uint32_t left_offset, const uint32_t bottom_offset) {

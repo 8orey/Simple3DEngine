@@ -16,11 +16,11 @@ namespace EngineCore {
         const GLsizei mip_levels = static_cast<GLsizei>(log2(std::max(img.width, img.height))) + 1;
         glCreateTextures(GL_TEXTURE_2D, 1, &m_id);
 
-        if (img.f == image_format::JPEG) {
+        if (img.fmt == Image_t::format::JPEG) {
             glTextureStorage2D(m_id, mip_levels, GL_RGB8, img.width, img.height);
             glTextureSubImage2D(m_id, 0, 0, 0, img.width, img.height, GL_RGB, GL_UNSIGNED_BYTE, img.image);
         }
-        if (img.f == image_format::PNG) {
+        if (img.fmt == Image_t::format::PNG) {
             //(GLuint texture, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
             glTextureStorage2D(m_id, mip_levels, GL_RGBA8, img.width, img.height);
             //(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pixels)

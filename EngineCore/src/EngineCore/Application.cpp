@@ -112,64 +112,107 @@ namespace EngineCore {
 
         Renderer_OpenGL::enable_depth_testing();
 
+        auto CVSP = PROJECT_SOURCE_DIR "EngineCore/src/EngineCore/Shaders/cube.vert";
+        auto CFSP = PROJECT_SOURCE_DIR "EngineCore/src/EngineCore/Shaders/cube.frag";
         auto VSP = PROJECT_SOURCE_DIR "EngineCore/src/EngineCore/Shaders/nanosuit.vert";
         auto FSP = PROJECT_SOURCE_DIR "EngineCore/src/EngineCore/Shaders/nanosuit.frag";
         auto MOP = PROJECT_SOURCE_DIR "resources/nanosuit/nanosuit.obj";
+        auto CMP = PROJECT_SOURCE_DIR "resources/cube/cube.stl";
+
 
         ShaderProgram NSP(VSP, FSP);
-
-        Model soldier(MOP);
+        ShaderProgram CSP(CVSP, CFSP);
 
 
         init();
 
-        glm::vec3 pos = { 0, 0, 0 };
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 1; ++i) {
             point_lights.push_back({});
-            pos[0] = pos[1] + pos[2];
-            pos[1] = pos[2] - pos[1];
-            pos[2] = pos[0] / pos[1];
         }
 
-		while (!m_bCloseWindow) {
+        struct Entity {
+            Model model;
+            glm::mat4 module;
+        };
+        
+        Entity cube{
+            {CMP},
+            glm::mat4(1.f)
+        };
 
-            Renderer_OpenGL::set_clear_color(m_background_color);
-            Renderer_OpenGL::clear();
+        Entity soldier{
+            {MOP},
+            glm::mat4(1.f)
+        };
+        
 
-            auto module_matrix = glm::mat4(1.f);
-            auto mvp_matrix = camera.get_view_projection_matrix() * module_matrix;
-            auto mv_matrix = camera.get_view_matrix() * module_matrix;
-            auto normal_matrix = glm::mat3(1.f);
 
-            NSP.bind();
+        auto draw = [&](Entity* en, ShaderProgram const& shd) -> void {
+            auto mvp_matrix = camera.get_view_projection_matrix() * en->module;
+            auto mv_matrix = camera.get_view_matrix() * en->module;
+            auto normal_matrix = glm::mat3(glm::transpose(glm::inverse(glm::mat3(en->module))));
+            
+            shd.bind();
 
-            NSP.set_mat4("module_view_matrix", mv_matrix);
-            NSP.set_mat4("mvp_matrix", mvp_matrix);
-            NSP.set_mat3("normal_matrix", normal_matrix);
+            shd.set_mat4("module_view_matrix", mv_matrix);
+            shd.set_mat4("mvp_matrix", mvp_matrix);
+            shd.set_mat3("normal_matrix", normal_matrix);
+            
+            en->model.draw(shd);
+            };
 
-            NSP.set_float("material.shininess", 32.f);
+        auto shd_light_uniform = [&](ShaderProgram const& SHD) -> void {
+            SHD.bind();
 
-            NSP.set_uint("PLA.size", point_lights.size());
+            SHD.set_float("material.shininess", 32.f);
+
+            SHD.set_uint("PLA.size", point_lights.size());
 
             for (int i = 0; i < point_lights.size(); ++i) {
                 auto name = std::format("PLA.pnts[{}]", i);
                 const auto& cur = point_lights[i];
 
                 auto position_eye = camera.get_view_matrix() * glm::vec4(cur.position, 1.f);
-                NSP.set_vec3((name + ".position_eye").c_str(), glm::vec3(position_eye));
-                NSP.set_vec3((name + ".ambient").c_str(), cur.ambient);
-                NSP.set_vec3((name + ".diffuse").c_str(), cur.diffuse);
-                NSP.set_vec3((name + ".specular").c_str(), cur.specular);
-                NSP.set_float((name + ".shininess").c_str(), cur.shininess);
-                NSP.set_float((name + ".linear").c_str(), cur.linear);
-                NSP.set_float((name + ".quadro").c_str(), cur.quadro);
-                NSP.set_float((name + ".intensity").c_str(), cur.intensity / 8.f);
+                SHD.set_vec3((name + ".position_eye").c_str(), glm::vec3(position_eye));
+                SHD.set_vec3((name + ".ambient").c_str(), cur.ambient);
+                SHD.set_vec3((name + ".diffuse").c_str(), cur.diffuse);
+                SHD.set_vec3((name + ".specular").c_str(), cur.specular);
+                SHD.set_float((name + ".shininess").c_str(), cur.shininess);
+                SHD.set_float((name + ".linear").c_str(), cur.linear);
+                SHD.set_float((name + ".quadro").c_str(), cur.quadro);
+                SHD.set_float((name + ".intensity").c_str(), cur.intensity);
 
             }
 
-            soldier.draw(NSP);
 
+            };
+       
 
+		while (!m_bCloseWindow) {
+
+            Renderer_OpenGL::set_clear_color(m_background_color);
+
+            shd_light_uniform(NSP);
+            shd_light_uniform(CSP);
+
+            Renderer_OpenGL::clear();
+
+            soldier.module = glm::mat4(1.f);
+            draw(&soldier, NSP);
+
+            auto size = 21.0;
+            auto resize1 = 0.1;
+            cube.module = glm::translate(glm::scale(glm::mat4(1.f), { resize1, resize1, resize1}), { 0, 0, 0});
+            draw(&cube, NSP);
+
+            auto scf = 0.11;
+            auto tsf = (scf * size - resize1 * size) / 2.0;
+            cube.module = glm::scale(glm::mat4(1.f), { scf, scf, scf });
+            
+            CSP.bind();
+            CSP.set_int("flag", 1);
+            draw(&cube, CSP);
+            
             UIModule::UI_draw_begin();
             on_UI_update();
             UIModule::UI_draw_end();
